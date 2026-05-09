@@ -58,11 +58,13 @@ The global app carousel appears near the top of every page and is rendered from 
 
 ### How to update carousel images
 1. Add the new icon file to `assets/app-icons/`.
-2. Prefer a lightweight square asset, ideally SVG. If you use PNG, keep it optimized and reasonably sized.
+2. Prefer a square asset. PNG is the expected default, but JPEG, SVG, and other common web image formats also work.
 3. Update the matching app entry in `FOCAL_STUDIO_APPS` inside `assets/script.js`.
 4. Set the `icon` field to the new file path, for example `assets/app-icons/my-app.svg`.
 5. Make sure the `href` points to a stable target in `apps.html`, such as `apps.html#app-my-app`.
 6. If the target does not exist yet, add an `id` to the correct app card or section in `apps.html`.
+
+The carousel currently shows image tiles only, without app names, so the icon should read clearly at small square sizes.
 
 Example:
 
@@ -73,14 +75,14 @@ var FOCAL_STUDIO_APPS = [
     name: 'WildFocus',
     status: 'released',
     href: 'apps.html#app-wildfocus',
-    icon: 'assets/app-icons/wildfocus.svg'
+    icon: 'assets/app-icons/wildfocus.jpeg'
   },
   {
     id: 'app-my-app',
     name: 'My App',
     status: 'coming-soon',
     href: 'apps.html#app-my-app',
-    icon: 'assets/app-icons/my-app.svg'
+    icon: 'assets/app-icons/my-app.png'
   }
 ];
 ```
@@ -102,5 +104,5 @@ var FOCAL_STUDIO_APPS = [
 
 ## Current Content Notes
 - WildFocus is the only real released app currently represented in the repo content.
-- Additional placeholder apps are seeded across all three lanes to test carousel motion, spacing, and anchor behavior.
-- The carousel also supports empty In Development and Coming Soon lanes if those placeholder entries are removed later.
+- The carousel uses image-only square tiles and can work with PNG, JPEG, or SVG app icons.
+- `apps.html` includes commented templates for released, in-development, and coming-soon entries so new apps can be added quickly.

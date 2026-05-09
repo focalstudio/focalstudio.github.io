@@ -169,13 +169,6 @@ ul { list-style: none; }
   margin-bottom: 1rem;
 }
 
-.hero-motto {
-  font-size: 1.35rem;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.01em;
-}
 
 .hero-title {
   font-size: 2.25rem;
@@ -194,140 +187,133 @@ ul { list-style: none; }
   margin-bottom: 2rem;
 }
 
-/* ── 6A. Global app carousel strip ─────────────────────────── */
+/* ── 6A. Global app ticker band ─────────────────────────────── */
 .app-strip-shell {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 242, 238, 0.92));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(245, 242, 238, 0.94));
   border-bottom: 1px solid var(--border);
-}
-
-.app-strip {
-  padding: 1.5rem 0 1.75rem;
-}
-
-.app-strip-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.app-strip-title {
-  font-size: 1.2rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  line-height: 1.2;
-}
-
-.app-strip-copy {
-  max-width: 32rem;
-  color: var(--text-muted);
-  font-size: 0.95rem;
-}
-
-.app-strip-lanes {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 1rem;
-  align-items: stretch;
-}
-
-.app-lane {
-  min-width: 0;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
   overflow: hidden;
 }
 
-.app-lane-head {
-  padding: 1rem 1rem 0.8rem;
-  border-bottom: 1px solid #ece6de;
+.app-ticker-outer {
+  padding: 0.75rem 0;
 }
 
-.app-lane-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1.25;
-}
-
-.app-lane-viewport {
-  overflow: hidden;
-  padding: 1rem;
-}
-
-.app-lane-track {
+.app-ticker-track {
   display: flex;
-  gap: 0.85rem;
+  align-items: flex-start;
   width: max-content;
-  min-width: 100%;
+  /* gap is set via JS so one set = full strip width */
 }
 
-.app-lane-track.is-static {
-  flex-wrap: wrap;
+/* Left-to-right infinite scroll: from −50% (2nd half) to 0 (1st half) */
+@keyframes ticker-ltr {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
 }
 
-.app-lane-track.is-animated {
-  flex-wrap: nowrap;
-  animation: lane-pan var(--lane-duration, 20s) linear infinite alternate;
-  will-change: transform;
+.app-ticker-track.is-ready {
+  animation: ticker-ltr 32s linear infinite;
 }
 
-.app-lane:hover .app-lane-track.is-animated,
-.app-lane:focus-within .app-lane-track.is-animated {
+.app-ticker-track.is-ready:hover,
+.app-ticker-track.is-ready:focus-within {
   animation-play-state: paused;
 }
 
-.app-lane-link {
+.app-ticker-link {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.6rem;
-  min-width: 96px;
-  padding: 0.85rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: linear-gradient(180deg, #fffdfb 0%, #f4efe8 100%);
-  color: var(--text);
-  text-align: center;
+  justify-content: center;
+  border-radius: 10px;
   text-decoration: none;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.app-ticker-link:hover {
+  text-decoration: none;
+  transform: scale(1.07);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+
+.app-ticker-icon {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
+.app-ticker-icon--color {
   flex-shrink: 0;
 }
 
-.app-lane-link:hover {
-  text-decoration: none;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
-  border-color: #d6cdc3;
+.app-ticker-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.28rem;
 }
 
-.app-lane-icon {
-  width: 56px;
-  height: 56px;
+.app-ticker-icon-wrap {
+  position: relative;
 }
 
-.app-lane-name {
+.app-ticker-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.28rem;
+  border-radius: 3px;
+  line-height: 1.4;
+  border: 1.5px solid var(--bg);
+  pointer-events: none;
+}
+
+.app-ticker-badge--new  { background: var(--brand); color: #fff; }
+.app-ticker-badge--beta { background: #d97706; color: #fff; }
+.app-ticker-badge--soon { background: #999; color: #fff; }
+
+.app-ticker-name {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-subtle);
+  text-align: center;
+  max-width: 52px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+/* ── 6B. Testers bar ────────────────────────────────────── */
+.testers-bar {
+  background: #fffbeb;
+  border-bottom: 1px solid #fde68a;
+  padding: 0.45rem 0;
+}
+
+.testers-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
   font-size: 0.82rem;
+  color: #92400e;
+  flex-wrap: wrap;
+}
+
+.testers-bar-link {
   font-weight: 700;
-  line-height: 1.2;
+  color: #b45309;
+  text-decoration: underline;
 }
 
-.app-lane-empty {
-  padding: 1rem;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-@keyframes lane-pan {
-  from { transform: translateX(0); }
-  to { transform: translateX(calc(var(--lane-distance, 0px) * -1)); }
-}
+.testers-bar-link:hover { color: #92400e; text-decoration: none; }
 
 /* ── 7. Buttons ─────────────────────────────────────────────── */
 .btn {
@@ -421,6 +407,14 @@ ul { list-style: none; }
   flex-grow: 1;
 }
 
+.badge-group {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
 .badge-platform {
   display: inline-block;
   font-size: 0.7rem;
@@ -431,7 +425,11 @@ ul { list-style: none; }
   color: var(--brand-dark);
   border-radius: 4px;
   padding: 0.15rem 0.5rem;
-  margin-bottom: 1.25rem;
+}
+
+.badge-platform--iphone {
+  background: #e8edf8;
+  color: #3f5fa8;
 }
 
 .app-card-link {
@@ -852,7 +850,7 @@ a:focus-visible,
 button:focus-visible,
 .nav-links a:focus-visible,
 .btn:focus-visible,
-.app-lane-link:focus-visible,
+.app-ticker-link:focus-visible,
 .app-card-link:focus-visible,
 .contact-item a:focus-visible {
   outline: 2px solid var(--brand);
@@ -937,11 +935,7 @@ button:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 
-  .app-lane-track.is-animated {
-    animation: none;
-  }
-
-  .app-lane-link,
+  .app-ticker-link,
   .app-card,
   .btn,
   .contact-item,
@@ -950,28 +944,22 @@ button:focus-visible,
     transition: none;
   }
 
-  .app-lane-link:hover,
+  .app-ticker-link:hover,
   .app-card:hover,
   .btn:hover {
     transform: none;
   }
+
+  .app-ticker-track.is-ready {
+    animation: none;
+  }
+
+  .app-ticker-badge {
+    border: none;
+  }
 }
 
 /* ── 22. Responsive ─────────────────────────────────────────── */
-@media (max-width: 900px) {
-  .app-strip-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .app-strip-lanes {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .app-lane--released {
-    grid-column: 1 / -1;
-  }
-}
 
 @media (max-width: 640px) {
   /* Nav */
@@ -1007,31 +995,6 @@ button:focus-visible,
   /* Hero */
   .hero { padding: 3rem 0 2.5rem; }
   .hero-title { font-size: 1.7rem; }
-
-  .app-strip {
-    padding: 1.25rem 0 1.5rem;
-  }
-
-  .app-strip-lanes {
-    grid-template-columns: 1fr;
-  }
-
-  .app-lane--released {
-    grid-column: auto;
-  }
-
-  .app-lane-head {
-    padding: 0.95rem 0.95rem 0.75rem;
-  }
-
-  .app-lane-viewport,
-  .app-lane-empty {
-    padding: 0.95rem;
-  }
-
-  .app-lane-link {
-    min-width: 88px;
-  }
 
   /* Sections */
   .section { padding: 2.5rem 0; }

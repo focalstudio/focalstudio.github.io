@@ -15,6 +15,8 @@ All notable changes to this repository will be documented in this file.
 - Extended `assets/styles.css` with shared carousel layout, responsive behavior, hover/focus treatment, and reduced-motion handling.
 - Seeded the carousel and `apps.html` with placeholder app entries so each lane can be tested with multiple items.
 - Updated hash-based app navigation so carousel links recenter the target app card within the viewport on `apps.html`.
+- Switched the carousel to smaller square image-only tiles, pointed WildFocus at the real JPEG asset, and replaced visible placeholder cards with commented templates.
+- Simplified carousel and catalog headings, and resized the lane layout so In Dev and Coming Soon show one tile at a time while Released uses the remaining space.
 
 ### Fixed
 - Fixed broken footer copyright markup in `app-wildfocus.html` and `privacy-policy.html`.

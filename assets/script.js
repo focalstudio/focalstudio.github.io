@@ -1,77 +1,50 @@
 /* script.js — minimal JS for fpmartinez10.github.io */
 
 /* Shared app metadata for global catalog surfaces */
+/* Template for new entries:
+{
+  id: 'app-example',
+  name: 'Example App',
+  status: 'released',
+  href: 'apps.html#app-example',
+  icon: 'assets/app-icons/example.png'
+}
+*/
 var FOCAL_STUDIO_APPS = [
   {
     id: 'app-wildfocus',
     name: 'WildFocus',
     status: 'released',
+    isNew: true,
     href: 'apps.html#app-wildfocus',
-    icon: 'assets/app-icons/wildfocus.svg'
+    icon: 'assets/app-icons/wildfocus.jpeg'
   },
-  {
-    id: 'app-trailnote',
-    name: 'TrailNote',
-    status: 'released',
-    href: 'apps.html#app-trailnote',
-    icon: 'assets/app-icons/trailnote.svg'
-  },
-  {
-    id: 'app-quietlist',
-    name: 'QuietList',
-    status: 'released',
-    href: 'apps.html#app-quietlist',
-    icon: 'assets/app-icons/quietlist.svg'
-  },
-  {
-    id: 'app-studysprint',
-    name: 'StudySprint',
-    status: 'in-development',
-    href: 'apps.html#app-studysprint',
-    icon: 'assets/app-icons/studysprint.svg'
-  },
-  {
-    id: 'app-pantrymap',
-    name: 'PantryMap',
-    status: 'in-development',
-    href: 'apps.html#app-pantrymap',
-    icon: 'assets/app-icons/pantrymap.svg'
-  },
-  {
-    id: 'app-daypebble',
-    name: 'DayPebble',
-    status: 'coming-soon',
-    href: 'apps.html#app-daypebble',
-    icon: 'assets/app-icons/daypebble.svg'
-  },
-  {
-    id: 'app-hushtimer',
-    name: 'HushTimer',
-    status: 'coming-soon',
-    href: 'apps.html#app-hushtimer',
-    icon: 'assets/app-icons/hushtimer.svg'
-  }
+  { id: 'app-p1', placeholder: true, name: 'App 2', status: 'released',       href: 'apps.html', color: '#b5cce4' },
+  { id: 'app-p2', placeholder: true, name: 'App 3', status: 'released',       href: 'apps.html', color: '#c4d9b0' },
+  { id: 'app-p3', placeholder: true, name: 'App 4', status: 'released',       href: 'apps.html', color: '#e4c9a8' },
+  /* betaLink: set to your TestFlight / Google beta URL when ready */
+  { id: 'app-p4', placeholder: true, name: 'App 5', status: 'in-development', href: 'apps.html', color: '#d4b5e4', betaLink: '' },
+  { id: 'app-p5', placeholder: true, name: 'App 6', status: 'in-development', href: 'apps.html', color: '#e4d4a8', betaLink: '' },
+  { id: 'app-p6', placeholder: true, name: 'App 7', status: 'coming-soon',    href: 'apps.html', color: '#a8c4d4' },
+  { id: 'app-p7', placeholder: true, name: 'App 8', status: 'coming-soon',    href: 'apps.html', color: '#d4a8b5' }
 ];
 
 var FOCAL_STUDIO_APP_LANES = [
   {
     key: 'released',
     label: 'Released',
-    title: 'Available now',
     emptyText: 'Released apps will appear here as the catalog grows.',
     duration: 24
   },
   {
     key: 'in-development',
-    label: 'In Development',
-    title: 'Building now',
+    label: 'In Dev',
     emptyText: 'Nothing is in active development right now.',
     duration: 18
   },
   {
     key: 'coming-soon',
     label: 'Coming Soon',
-    title: 'Planned next',
     emptyText: 'New app ideas will show up here soon.',
     duration: 16
   }
@@ -97,120 +70,116 @@ var FOCAL_STUDIO_APP_LANES = [
   });
 })();
 
-/* Global app carousel strip */
+/* Global app ticker band */
 (function () {
-  var resizeTimer = null;
-
   function getAppsForLane(status) {
     return FOCAL_STUDIO_APPS.filter(function (app) {
       return app.status === status;
     });
   }
 
-  function buildLaneItem(app) {
+  function buildTickerItem(app) {
+    var badge = '';
+    if (app.isNew && app.status === 'released') {
+      badge = '<span class="app-ticker-badge app-ticker-badge--new">New</span>';
+    } else if (app.status === 'in-development') {
+      badge = '<span class="app-ticker-badge app-ticker-badge--beta">Beta</span>';
+    } else if (app.status === 'coming-soon') {
+      badge = '<span class="app-ticker-badge app-ticker-badge--soon">Soon</span>';
+    }
+
+    var iconEl = app.icon
+      ? '<img class="app-ticker-icon" src="' + app.icon + '" alt="" width="44" height="44" />'
+      : '<span class="app-ticker-icon app-ticker-icon--color" style="background:' + app.color + '"></span>';
+
+    var href = (app.status === 'in-development' && app.betaLink) ? app.betaLink : app.href;
+    var target = (app.status === 'in-development' && app.betaLink) ? ' target="_blank" rel="noopener noreferrer"' : '';
+    var fadedStyle = app.status === 'coming-soon' ? ' style="opacity:0.45"' : '';
+
+    var nameEl = app.placeholder ? '' : '<span class="app-ticker-name">' + app.name + '</span>';
+
     return (
-      '<a class="app-lane-link" href="' + app.href + '" aria-label="Open ' + app.name + ' in My Apps">' +
-        '<img class="app-lane-icon" src="' + app.icon + '" alt="" width="56" height="56" />' +
-        '<span class="app-lane-name">' + app.name + '</span>' +
+      '<a class="app-ticker-link" href="' + href + '" aria-label="' + app.name + '"' + target + fadedStyle + '>' +
+        '<span class="app-ticker-item">' +
+          '<span class="app-ticker-icon-wrap">' + iconEl + badge + '</span>' +
+          nameEl +
+        '</span>' +
       '</a>'
     );
   }
 
-  function buildLaneMarkup(lane) {
-    var apps = getAppsForLane(lane.key);
-    var laneSlug = lane.key.replace(/[^a-z0-9]+/g, '-');
-    var bodyMarkup = '';
+  function buildTestersBar() {
+    var betaApps = FOCAL_STUDIO_APPS.filter(function (app) {
+      return app.status === 'in-development' && app.betaLink;
+    });
+    if (!betaApps.length) return null;
 
-    if (apps.length) {
-      bodyMarkup =
-        '<div class="app-lane-viewport" data-lane-viewport>' +
-          '<div class="app-lane-track" data-lane-track style="--lane-duration: ' + lane.duration + 's">' +
-            apps.map(buildLaneItem).join('') +
-          '</div>' +
-        '</div>';
-    } else {
-      bodyMarkup =
-        '<p class="app-lane-empty">' + lane.emptyText + '</p>';
-    }
-
-    return (
-      '<section class="app-lane app-lane--' + laneSlug + '" aria-labelledby="lane-' + laneSlug + '">' +
-        '<div class="app-lane-head">' +
-          '<p class="section-label">' + lane.label + '</p>' +
-          '<h2 class="app-lane-title" id="lane-' + laneSlug + '">' + lane.title + '</h2>' +
+    var app = betaApps[0];
+    var bar = document.createElement('div');
+    bar.className = 'testers-bar';
+    bar.innerHTML =
+      '<div class="container">' +
+        '<div class="testers-bar-inner">' +
+          '<span>🧪 Testing <strong>' + app.name + '</strong> — help us ship it.</span>' +
+          '<a class="testers-bar-link" href="' + app.betaLink + '" target="_blank" rel="noopener noreferrer">Join Beta →</a>' +
         '</div>' +
-        bodyMarkup +
-      '</section>'
-    );
+      '</div>';
+    return bar;
   }
 
-  function activateLaneTracks(host) {
-    host.querySelectorAll('[data-lane-track]').forEach(function (track) {
-      var viewport = track.parentElement;
-      var originalItems = Array.prototype.slice.call(track.children);
+  var ICON_WIDTH = 44; /* keep in sync with CSS */
 
-      track.classList.remove('is-animated');
-      track.classList.add('is-static');
-      track.style.removeProperty('--lane-distance');
-
-      if (originalItems.length < 2) {
-        return;
-      }
-
-      while (track.scrollWidth <= viewport.clientWidth * 1.35 && track.children.length < originalItems.length * 4) {
-        originalItems.forEach(function (item) {
-          track.appendChild(item.cloneNode(true));
-        });
-      }
-
-      if (track.scrollWidth > viewport.clientWidth + 24) {
-        track.classList.remove('is-static');
-        track.classList.add('is-animated');
-        track.style.setProperty('--lane-distance', (track.scrollWidth - viewport.clientWidth) + 'px');
-      }
+  /* Space icons so exactly one set fills the strip width, then the
+     translateX(-50%) loop point hides the duplicate set perfectly. */
+  function applySpacing(track, outerWidth) {
+    var n = FOCAL_STUDIO_APPS.length;
+    if (!n) return;
+    var margin = Math.max(24, Math.round(outerWidth / n - ICON_WIDTH));
+    Array.prototype.forEach.call(track.querySelectorAll('.app-ticker-link'), function (link) {
+      link.style.marginRight = margin + 'px';
     });
   }
 
-  function renderAppCarousels() {
+  function renderAppTickers() {
     var hosts = Array.prototype.slice.call(document.querySelectorAll('[data-app-carousel]'));
+    if (!hosts.length) return;
 
-    if (!hosts.length) {
-      return;
-    }
+    /* Two copies: one set = viewportWidth, so translateX(-50%) hides
+       exactly the duplicate — you never see the same app twice. */
+    var singleSet = FOCAL_STUDIO_APPS.map(buildTickerItem).join('');
 
     hosts.forEach(function (host) {
       host.innerHTML =
-        '<div class="container">' +
-          '<section class="app-strip" aria-label="Browse the full app catalog">' +
-            '<div class="app-strip-header">' +
-              '<div>' +
-                '<p class="section-label">App Catalog</p>' +
-                '<h2 class="app-strip-title">Explore everything in one glance</h2>' +
-              '</div>' +
-              '<p class="app-strip-copy">Released apps, active builds, and upcoming ideas all link back to their place in <a href="apps.html">My Apps</a>.</p>' +
-            '</div>' +
-            '<div class="app-strip-lanes">' +
-              FOCAL_STUDIO_APP_LANES.map(buildLaneMarkup).join('') +
-            '</div>' +
-          '</section>' +
+        '<div class="app-ticker-outer">' +
+          '<div class="app-ticker-track">' +
+            singleSet + singleSet +
+          '</div>' +
         '</div>';
-    });
 
-    var schedule = window.requestAnimationFrame || function (callback) {
-      window.setTimeout(callback, 0);
-    };
+      var outer = host.querySelector('.app-ticker-outer');
+      var track = host.querySelector('.app-ticker-track');
 
-    schedule(function () {
-      hosts.forEach(activateLaneTracks);
+      window.requestAnimationFrame(function () {
+        applySpacing(track, outer.clientWidth);
+        track.classList.add('is-ready');
+      });
+
+      var resizeTimer;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          track.classList.remove('is-ready');
+          applySpacing(track, outer.clientWidth);
+          track.classList.add('is-ready');
+        }, 150);
+      });
+
+      var bar = buildTestersBar();
+      if (bar) host.parentNode.insertBefore(bar, host.nextSibling);
     });
   }
 
-  renderAppCarousels();
-
-  window.addEventListener('resize', function () {
-    window.clearTimeout(resizeTimer);
-    resizeTimer = window.setTimeout(renderAppCarousels, 140);
-  });
+  renderAppTickers();
 })();
 
 /* Center linked app targets on the catalog page */
