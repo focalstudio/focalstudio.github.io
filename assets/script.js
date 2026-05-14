@@ -19,31 +19,11 @@ var FOCAL_STUDIO_APPS = [
     href: 'apps.html#app-wildfocus',
     icon: 'assets/app-icons/wildfocus.jpeg'
   },
-  { id: 'app-mealcart', name: 'MealCart', status: 'coming-soon', href: 'apps.html', icon: 'assets/app-icons/mealcart.png' },
-  { id: 'app-staylock', name: 'StayLock', status: 'coming-soon', href: 'apps.html', icon: 'assets/app-icons/staylock.png' },
-  { id: 'app-vestia',   name: 'Vestia',   status: 'coming-soon', href: 'apps.html', icon: 'assets/app-icons/vestia.png' }
+  { id: 'app-mealcart', name: 'MealCart', status: 'coming-soon', href: 'apps.html#app-mealcart', icon: 'assets/app-icons/mealcart.png' },
+  { id: 'app-staylock', name: 'StayLock', status: 'coming-soon', href: 'apps.html#app-staylock', icon: 'assets/app-icons/staylock.png' },
+  { id: 'app-vestia',   name: 'Vestia',   status: 'coming-soon', href: 'apps.html#app-vestia',   icon: 'assets/app-icons/vestia.png' }
 ];
 
-var FOCAL_STUDIO_APP_LANES = [
-  {
-    key: 'released',
-    label: 'Released',
-    emptyText: 'Released apps will appear here as the catalog grows.',
-    duration: 24
-  },
-  {
-    key: 'in-development',
-    label: 'In Dev',
-    emptyText: 'Nothing is in active development right now.',
-    duration: 18
-  },
-  {
-    key: 'coming-soon',
-    label: 'Coming Soon',
-    emptyText: 'New app ideas will show up here soon.',
-    duration: 16
-  }
-];
 
 /* Mobile navigation toggle */
 (function () {
@@ -73,6 +53,13 @@ var FOCAL_STUDIO_APP_LANES = [
     });
   }
 
+  function statusLabel(app) {
+    if (app.isNew && app.status === 'released') return 'New';
+    if (app.status === 'in-development') return 'In Development';
+    if (app.status === 'coming-soon') return 'Coming Soon';
+    return 'Released';
+  }
+
   function buildTickerItem(app) {
     var badge = '';
     if (app.isNew && app.status === 'released') {
@@ -94,7 +81,7 @@ var FOCAL_STUDIO_APP_LANES = [
     var nameEl = app.placeholder ? '' : '<span class="app-ticker-name">' + app.name + '</span>';
 
     return (
-      '<a class="app-ticker-link" href="' + href + '" aria-label="' + app.name + '"' + target + fadedStyle + '>' +
+      '<a class="app-ticker-link" href="' + href + '" aria-label="' + app.name + ' — ' + statusLabel(app) + '"' + target + fadedStyle + '>' +
         '<span class="app-ticker-item">' +
           '<span class="app-ticker-icon-wrap">' + iconEl + badge + '</span>' +
           nameEl +
