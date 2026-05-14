@@ -169,13 +169,6 @@ ul { list-style: none; }
   margin-bottom: 1rem;
 }
 
-.hero-motto {
-  font-size: 1.35rem;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.01em;
-}
 
 .hero-title {
   font-size: 2.25rem;
@@ -193,6 +186,134 @@ ul { list-style: none; }
   max-width: 500px;
   margin-bottom: 2rem;
 }
+
+/* ── 6A. Global app ticker band ─────────────────────────────── */
+.app-strip-shell {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(245, 242, 238, 0.94));
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.app-ticker-outer {
+  padding: 0.75rem 0;
+}
+
+.app-ticker-track {
+  display: flex;
+  align-items: flex-start;
+  width: max-content;
+  /* gap is set via JS so one set = full strip width */
+}
+
+/* Left-to-right infinite scroll: from −50% (2nd half) to 0 (1st half) */
+@keyframes ticker-ltr {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+.app-ticker-track.is-ready {
+  animation: ticker-ltr 32s linear infinite;
+}
+
+.app-ticker-track.is-ready:hover,
+.app-ticker-track.is-ready:focus-within {
+  animation-play-state: paused;
+}
+
+.app-ticker-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.app-ticker-link:hover {
+  text-decoration: none;
+  transform: scale(1.07);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+
+.app-ticker-icon {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
+.app-ticker-icon--color {
+  flex-shrink: 0;
+}
+
+.app-ticker-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.28rem;
+}
+
+.app-ticker-icon-wrap {
+  position: relative;
+}
+
+.app-ticker-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.28rem;
+  border-radius: 3px;
+  line-height: 1.4;
+  border: 1.5px solid var(--bg);
+  pointer-events: none;
+}
+
+.app-ticker-badge--new  { background: var(--brand); color: #fff; }
+.app-ticker-badge--beta { background: #d97706; color: #fff; }
+.app-ticker-badge--soon { background: #999; color: #fff; }
+
+.app-ticker-name {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-subtle);
+  text-align: center;
+  max-width: 52px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+/* ── 6B. Testers bar ────────────────────────────────────── */
+.testers-bar {
+  background: #fffbeb;
+  border-bottom: 1px solid #fde68a;
+  padding: 0.45rem 0;
+}
+
+.testers-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 0.82rem;
+  color: #92400e;
+  flex-wrap: wrap;
+}
+
+.testers-bar-link {
+  font-weight: 700;
+  color: #b45309;
+  text-decoration: underline;
+}
+
+.testers-bar-link:hover { color: #92400e; text-decoration: none; }
 
 /* ── 7. Buttons ─────────────────────────────────────────────── */
 .btn {
@@ -286,6 +407,14 @@ ul { list-style: none; }
   flex-grow: 1;
 }
 
+.badge-group {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
 .badge-platform {
   display: inline-block;
   font-size: 0.7rem;
@@ -296,7 +425,11 @@ ul { list-style: none; }
   color: var(--brand-dark);
   border-radius: 4px;
   padding: 0.15rem 0.5rem;
-  margin-bottom: 1.25rem;
+}
+
+.badge-platform--iphone {
+  background: #e8edf8;
+  color: #3f5fa8;
 }
 
 .app-card-link {
@@ -717,6 +850,7 @@ a:focus-visible,
 button:focus-visible,
 .nav-links a:focus-visible,
 .btn:focus-visible,
+.app-ticker-link:focus-visible,
 .app-card-link:focus-visible,
 .contact-item a:focus-visible {
   outline: 2px solid var(--brand);
@@ -798,7 +932,35 @@ button:focus-visible,
   font-size: 0.95rem;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  .app-ticker-link,
+  .app-card,
+  .btn,
+  .contact-item,
+  .carousel-track,
+  .carousel-btn {
+    transition: none;
+  }
+
+  .app-ticker-link:hover,
+  .app-card:hover,
+  .btn:hover {
+    transform: none;
+  }
+
+  .app-ticker-track.is-ready {
+    animation: none;
+  }
+
+  .app-ticker-badge {
+    border: none;
+  }
+}
+
 /* ── 22. Responsive ─────────────────────────────────────────── */
+
 @media (max-width: 640px) {
   /* Nav */
   .nav-toggle {

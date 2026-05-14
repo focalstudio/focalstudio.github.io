@@ -4,17 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Apps — Focal Studio</title>
-  <meta name="description" content="Android apps built by Focal Studio. Privacy-first, no tracking, no accounts." />
+  <meta name="description" content="Apps built by Focal Studio. Privacy-first, no tracking, no accounts." />
   <!-- Open Graph / Twitter -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://fpmartinez10.github.io/apps.html" />
   <meta property="og:title" content="My Apps — Focal Studio" />
-  <meta property="og:description" content="Android apps built by Focal Studio. Privacy-first, no tracking, no accounts." />
+  <meta property="og:description" content="Apps built by Focal Studio. Privacy-first, no tracking, no accounts." />
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:url" content="https://fpmartinez10.github.io/apps.html" />
   <meta property="twitter:title" content="My Apps — Focal Studio" />
-  <meta property="twitter:description" content="Android apps built by Focal Studio. Privacy-first, no tracking, no accounts." />
-  <link rel="stylesheet" href="assets/styles.css" />
+  <meta property="twitter:description" content="Apps built by Focal Studio. Privacy-first, no tracking, no accounts." />
+  <link rel="stylesheet" href="assets/styles.css?v=20260508" />
 </head>
 <body>
 
@@ -38,23 +38,24 @@
 
   <main>
 
+    <section class="app-strip-shell" data-app-carousel></section>
+
     <!-- ── Page header ───────────────────────────────────────── -->
     <div class="container">
       <header class="page-header">
         <h1>My Apps</h1>
-        <p>Small, focused Android apps — each one built to solve a single real problem.</p>
+        <p>Small, focused apps — each one built to solve a single real problem.</p>
       </header>
     </div>
 
     <!-- ── Released apps ───────────────────────────────────────── -->
-    <section class="section">
+    <section class="section" id="released-apps">
       <div class="container">
-        <p class="section-label">Released</p>
-        <h2 class="section-title">Available Now</h2>
+        <h2 class="section-title">Released</h2>
 
         <div class="app-grid">
 
-          <article class="app-card">
+          <article class="app-card" id="app-wildfocus">
             <div class="app-card-icon">🐾</div>
             <h3 class="app-card-name">WildFocus</h3>
             <p class="app-card-tagline">
@@ -62,9 +63,26 @@
               Every timer you complete earns you a new creature.
               Beat procrastination one Pomodoro at a time.
             </p>
-            <span class="badge-platform">Android</span>
+            <div class="badge-group">
+              <span class="badge-platform">Android</span>
+              <span class="badge-platform badge-platform--iphone">iPhone</span>
+            </div>
             <a href="app-wildfocus.html" class="app-card-link">View App →</a>
           </article>
+          <!-- Template for a new released app:
+          <article class="app-card" id="app-your-app">
+            <div class="app-card-icon">🎯</div>
+            <h3 class="app-card-name">Your App</h3>
+            <p class="app-card-tagline">
+              Short summary of what the app does and why someone would care.
+            </p>
+            <div class="badge-group">
+              <span class="badge-platform">Android</span>
+              <span class="badge-platform badge-platform--iphone">iPhone</span>
+            </div>
+            <a href="app-your-app.html" class="app-card-link">View App →</a>
+          </article>
+          -->
 
         </div>
 
@@ -72,14 +90,25 @@
     </section>
 
     <!-- ── In development apps ───────────────────────────────────── -->
-    <section class="section">
+    <section class="section" id="in-development-apps">
       <div class="container">
-        <p class="section-label">In Development</p>
-        <h2 class="section-title">Coming This Year</h2>
+        <h2 class="section-title">In Development</h2>
 
         <div class="app-grid">
-
-          <!-- Apps in active development will go here -->
+          <!-- Template for an in-development app:
+          <article class="app-card" id="app-your-app">
+            <div class="app-card-icon">🛠️</div>
+            <h3 class="app-card-name">Your App</h3>
+            <p class="app-card-tagline">
+              Short summary of what is being built and who it is for.
+            </p>
+            <div class="badge-group">
+              <span class="badge-platform">Android</span>
+              <span class="badge-platform badge-platform--iphone">iPhone</span>
+            </div>
+            <a href="#app-your-app" class="app-card-link">Coming Soon</a>
+          </article>
+          -->
 
         </div>
 
@@ -89,18 +118,52 @@
     </section>
 
     <!-- ── Coming soon apps ───────────────────────────────────────── -->
-    <section class="section">
+    <section class="section" id="coming-soon-apps">
       <div class="container">
-        <p class="section-label">Coming Soon</p>
-        <h2 class="section-title">Future Builds</h2>
+        <h2 class="section-title">Coming Soon</h2>
 
         <div class="app-grid">
 
-          <!-- Apps coming soon will go here -->
+          <article class="app-card" id="app-mealcart">
+            <div class="app-card-icon">🛒</div>
+            <h3 class="app-card-name">MealCart</h3>
+            <p class="app-card-tagline">
+              Smarter grocery planning. Coming soon.
+            </p>
+            <div class="badge-group">
+              <span class="badge-platform">Android</span>
+              <span class="badge-platform badge-platform--iphone">iPhone</span>
+            </div>
+            <span class="app-card-link" aria-disabled="true">Coming Soon</span>
+          </article>
+
+          <article class="app-card" id="app-staylock">
+            <div class="app-card-icon">🔒</div>
+            <h3 class="app-card-name">StayLock</h3>
+            <p class="app-card-tagline">
+              Block distractions on a schedule. Coming soon.
+            </p>
+            <div class="badge-group">
+              <span class="badge-platform">Android</span>
+              <span class="badge-platform badge-platform--iphone">iPhone</span>
+            </div>
+            <span class="app-card-link" aria-disabled="true">Coming Soon</span>
+          </article>
+
+          <article class="app-card" id="app-vestia">
+            <div class="app-card-icon">👗</div>
+            <h3 class="app-card-name">Vestia</h3>
+            <p class="app-card-tagline">
+              Your wardrobe, organized. Coming soon.
+            </p>
+            <div class="badge-group">
+              <span class="badge-platform">Android</span>
+              <span class="badge-platform badge-platform--iphone">iPhone</span>
+            </div>
+            <span class="app-card-link" aria-disabled="true">Coming Soon</span>
+          </article>
 
         </div>
-
-        <p class="empty-state">No apps announced yet. Subscribe below for updates.</p>
 
       </div>
     </section>
@@ -118,6 +181,6 @@
     </div>
   </footer>
 
-  <script src="assets/script.js"></script>
+  <script src="assets/script.js?v=20260508"></script>
 </body>
 </html>
