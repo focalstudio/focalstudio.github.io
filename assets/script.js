@@ -19,14 +19,9 @@ var FOCAL_STUDIO_APPS = [
     href: 'apps.html#app-wildfocus',
     icon: 'assets/app-icons/wildfocus.jpeg'
   },
-  { id: 'app-p1', placeholder: true, name: 'App 2', status: 'released',       href: 'apps.html', color: '#b5cce4' },
-  { id: 'app-p2', placeholder: true, name: 'App 3', status: 'released',       href: 'apps.html', color: '#c4d9b0' },
-  { id: 'app-p3', placeholder: true, name: 'App 4', status: 'released',       href: 'apps.html', color: '#e4c9a8' },
-  /* betaLink: set to your TestFlight / Google beta URL when ready */
-  { id: 'app-p4', placeholder: true, name: 'App 5', status: 'in-development', href: 'apps.html', color: '#d4b5e4', betaLink: '' },
-  { id: 'app-p5', placeholder: true, name: 'App 6', status: 'in-development', href: 'apps.html', color: '#e4d4a8', betaLink: '' },
-  { id: 'app-p6', placeholder: true, name: 'App 7', status: 'coming-soon',    href: 'apps.html', color: '#a8c4d4' },
-  { id: 'app-p7', placeholder: true, name: 'App 8', status: 'coming-soon',    href: 'apps.html', color: '#d4a8b5' }
+  { id: 'app-mealcart', name: 'MealCart', status: 'coming-soon', href: 'apps.html', icon: 'assets/app-icons/mealcart.png' },
+  { id: 'app-staylock', name: 'StayLock', status: 'coming-soon', href: 'apps.html', icon: 'assets/app-icons/staylock.png' },
+  { id: 'app-vestia',   name: 'Vestia',   status: 'coming-soon', href: 'apps.html', icon: 'assets/app-icons/vestia.png' }
 ];
 
 var FOCAL_STUDIO_APP_LANES = [
