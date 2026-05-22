@@ -3,155 +3,245 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy — WildFocus</title>
-  <meta name="description" content="Privacy Policy for WildFocus. No personal data is collected. All data stays on your device." />
-  <link rel="stylesheet" href="assets/styles.css?v=20260508" />
+  <title>Privacy Policy – WildFocus</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f2ee;
+      color: #1a1a1a;
+      line-height: 1.7;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+
+    header {
+      border-bottom: 2px solid #2d7d46;
+      padding-bottom: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      color: #2d7d46;
+      margin-bottom: .25rem;
+    }
+
+    header p { color: #666; font-size: .9rem; }
+
+    h2 {
+      font-size: 1.1rem;
+      color: #1a1a1a;
+      margin: 2rem 0 .6rem;
+      padding-left: .75rem;
+      border-left: 3px solid #2d7d46;
+    }
+
+    p { margin-bottom: .75rem; }
+
+    ul {
+      margin: .5rem 0 .75rem 1.5rem;
+    }
+
+    ul li { margin-bottom: .35rem; }
+
+    a { color: #2d7d46; }
+
+    .badge {
+      display: inline-block;
+      background: #2d7d46;
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 600;
+      border-radius: 4px;
+      padding: .1rem .45rem;
+      vertical-align: middle;
+      margin-left: .35rem;
+    }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid #e0e0e0;
+      font-size: .85rem;
+      color: #888;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <header>
+      <h1>Privacy Policy</h1>
+      <p>WildFocus &nbsp;·&nbsp; Last updated: May 2026</p>
+    </header>
 
-  <!-- ── Navigation ───────────────────────────────────────── -->
-  <nav class="site-nav" aria-label="Main navigation">
-    <div class="container nav-inner">
-      <a href="index.html" class="nav-logo">Focal Studio</a>
+    <p>
+      This Privacy Policy explains how <strong>WildFocus</strong> ("the app", "we", "our") handles
+      information when you use our application on iOS or Android. We have designed WildFocus with
+      privacy in mind — no personal accounts, minimal data collection, and full transparency about
+      what is measured and why.
+    </p>
 
-      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
+    <h2>1. Information We Collect</h2>
+    <p>
+      <strong>We do not collect personal information.</strong> The app does not require you to
+      create an account, sign in with an email, or provide any identifying details.
+    </p>
+    <p>
+      All data you generate — focus sessions, your pet collection, streaks, achievements,
+      preferences, and notification settings — is stored <strong>only on your device</strong>
+      using the device's local storage.
+    </p>
+    <p>
+      The app does collect <strong>anonymous usage events</strong> (Section 4) and
+      <strong>anonymous crash and performance data</strong> (Section 5) to help us understand
+      how the app is used and improve it. No event is linked to your identity.
+    </p>
 
-      <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="apps.html">My Apps</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="privacy-policy.html" class="active">Privacy Policy</a></li>
-      </ul>
-    </div>
-  </nav>
+    <h2>2. Local Data Storage</h2>
+    <p>WildFocus stores the following data locally on your device:</p>
+    <ul>
+      <li>Focus session history (dates, durations, outcomes)</li>
+      <li>Your pet collection and rarity records</li>
+      <li>Daily streak count</li>
+      <li>Achievement progress</li>
+      <li>Daily challenge progress and token balance</li>
+      <li>Notification preferences and scheduled times</li>
+      <li>Theme preference (light / dark / device)</li>
+    </ul>
+    <p>
+      This data is cleared if you uninstall the app. You can export and import it at any
+      time via the app's built-in Export / Import feature — the resulting JSON file stays
+      under your full control.
+    </p>
 
-  <main>
+    <h2>3. Cloud Backup <span class="badge">Optional</span></h2>
+    <p>
+      WildFocus offers an optional Cloud Backup feature. When you enable it, your local
+      data is encrypted and stored in <strong>Firebase Firestore</strong> (Google Cloud,
+      EU region) under an <strong>anonymous Firebase account</strong> — no email or
+      password required. A recovery key is generated so you can restore your backup on a
+      new device.
+    </p>
+    <p>
+      Cloud Backup is token-gated (10 backup tokens per month). Your anonymous account
+      ID is stored locally on your device and is not linked to your identity. If you
+      uninstall the app without exporting your recovery key, access to the cloud backup
+      may be permanently lost.
+    </p>
+    <p>You can delete your cloud backup at any time from Settings → Cloud Backup.</p>
 
-    <section class="app-strip-shell" data-app-carousel></section>
+    <h2>4. Analytics <span class="badge">Anonymous only</span></h2>
+    <p>
+      WildFocus collects anonymous usage events through <strong>PostHog</strong>
+      (posthog.com), an open-source product analytics platform. Data is stored on
+      PostHog's EU-region servers and is never used for advertising or shared with
+      third parties.
+    </p>
+    <p>The following event types are recorded:</p>
+    <ul>
+      <li>Session started, completed, or abandoned (duration in minutes, no content)</li>
+      <li>Shield token used</li>
+      <li>Achievement unlocked (achievement ID only)</li>
+      <li>Tab navigated to (tab name only)</li>
+      <li>Onboarding completed (first time only)</li>
+      <li>App errors (first 300 characters of the error message, no stack trace)</li>
+    </ul>
+    <p>
+      <strong>No personal information is included in any event.</strong> Your IP address
+      is never logged. Events are associated only with a randomly generated anonymous
+      identifier stored in the app's local storage — it is not linked to your identity
+      in any way.
+    </p>
+    <p>
+      <strong>You can opt out at any time</strong> in the app: Settings &rarr; Privacy
+      &rarr; Analytics toggle. When disabled, no events are sent.
+    </p>
 
-    <div class="container">
+    <h2>5. Crash &amp; Performance Reporting <span class="badge">Anonymous only</span></h2>
+    <p>
+      WildFocus uses <strong>Sentry</strong> (sentry.io) to collect anonymous crash
+      reports and performance traces. This helps us detect and fix bugs quickly. Sentry
+      is configured to:
+    </p>
+    <ul>
+      <li>Strip the user field from every event before transmission — no user identity is sent</li>
+      <li>Disable session replays entirely</li>
+      <li>Sample performance traces at 10% of sessions</li>
+    </ul>
+    <p>
+      Crash reports include stack traces and device context (OS version, app version,
+      memory state) but no personal data. Performance traces measure timing of app
+      operations (e.g., screen load times) without recording content.
+    </p>
 
-      <!-- ── Page header ─────────────────────────────────────── -->
-      <header class="page-header">
-        <h1>Privacy Policy</h1>
-        <p>WildFocus &nbsp;·&nbsp; Last updated: April 2026</p>
-      </header>
+    <h2>6. Third-Party Services</h2>
+    <p>WildFocus uses the following third-party services:</p>
+    <ul>
+      <li><strong>PostHog</strong> — anonymous product analytics (see Section 4)</li>
+      <li><strong>Sentry</strong> — anonymous crash and performance monitoring (see Section 5)</li>
+      <li><strong>Firebase / Firestore</strong> — anonymous cloud backup storage, optional (see Section 3)</li>
+    </ul>
+    <p>
+      No personal data is shared with or sold to any third party. No advertising or
+      social SDKs are integrated.
+    </p>
 
-      <!-- ── Policy content ────────────────────────────────── -->
-      <!-- Policy text preserved verbatim from the original policy document. -->
-      <!-- Only the styling wrapper and navigation have been updated.        -->
-      <section class="section">
-        <div class="policy-content">
+    <h2>7. Permissions</h2>
+    <p>The app may request the following permissions depending on your platform:</p>
+    <p><strong>iOS:</strong></p>
+    <ul>
+      <li><strong>Notifications</strong> — to send local focus reminders and streak nudges (optional)</li>
+    </ul>
+    <p><strong>Android:</strong></p>
+    <ul>
+      <li><strong>POST_NOTIFICATIONS</strong> — to send local focus reminders (optional)</li>
+      <li><strong>RECEIVE_BOOT_COMPLETED</strong> — to reschedule local notifications after restart</li>
+      <li><strong>SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM</strong> — to deliver notifications at configured times</li>
+    </ul>
+    <p>No permission is used to access your contacts, location, microphone, camera, or files.</p>
 
-          <p>
-            This Privacy Policy explains how <strong>WildFocus</strong> ("the app", "we", "our") handles
-            information when you use our Android application. We have designed WildFocus to work entirely
-            on your device — no servers, no accounts, no tracking.
-          </p>
+    <h2>8. Children's Privacy</h2>
+    <p>
+      WildFocus is not directed at children under 13. We do not knowingly collect personal
+      information from anyone, including children. Because no personal data leaves your
+      device, there is no risk of unintentional collection.
+    </p>
 
-          <h2>1. Information We Collect</h2>
-          <p>
-            <strong>We do not collect any personal information.</strong> The app does not require you to
-            create an account, sign in, or provide any identifying details.
-          </p>
-          <p>
-            All data generated while you use the app — focus sessions, your pet collection, streaks,
-            achievements, preferences and notification settings — is stored <strong>only on your device</strong>
-            using the device's local storage. This data never leaves your device and is never transmitted
-            to us or to any third party.
-          </p>
+    <h2>9. Data Security</h2>
+    <p>
+      Local data is protected by your device's own security mechanisms (lock screen,
+      encryption). Cloud backup data is stored under an anonymous Firebase account
+      accessible only via your recovery key. We recommend keeping your device software
+      and the app up to date.
+    </p>
 
-          <h2>2. Data Storage</h2>
-          <p>
-            WildFocus stores the following data locally on your device:
-          </p>
-          <ul>
-            <li>Focus session history (dates and durations)</li>
-            <li>Your pet collection and rarity records</li>
-            <li>Daily streak count</li>
-            <li>Achievement progress</li>
-            <li>Daily challenge progress and token balance</li>
-            <li>Notification preferences and scheduled times</li>
-            <li>Theme preference (light / dark / device)</li>
-          </ul>
-          <p>
-            This data is cleared if you uninstall the app or use the "Clear data" option in Android
-            settings. You can also export and import this data yourself via the app's built-in
-            Export / Import feature — the resulting JSON file stays under your full control.
-          </p>
+    <h2>10. Changes to This Policy</h2>
+    <p>
+      We may update this Privacy Policy as the app evolves. Any changes will be reflected
+      on this page with an updated date. The URL of this page remains constant, so you
+      can bookmark it for reference.
+    </p>
 
-          <h2>3. Push Notifications <span class="badge-local">Local only</span></h2>
-          <p>
-            The app can send push notifications (streak reminders, session nudges, etc.) if you grant
-            notification permission. These notifications are <strong>scheduled entirely on your device</strong>
-            using Android's local notification system. No notification data is sent through any server
-            or third-party push service.
-          </p>
+    <h2>11. Contact</h2>
+    <p>
+      If you have questions or concerns about this Privacy Policy, please contact us at:<br />
+      <a href="mailto:focalstudio.apps@gmail.com">focalstudio.apps@gmail.com</a>
+    </p>
 
-          <h2>4. Third-Party Services</h2>
-          <p>
-            WildFocus does not integrate any third-party analytics, advertising, crash reporting,
-            or social SDKs. No data is shared with or sold to any third party.
-          </p>
-
-          <h2>5. Permissions</h2>
-          <p>The app may request the following Android permissions:</p>
-          <ul>
-            <li><strong>POST_NOTIFICATIONS</strong> — to send local focus reminders (optional; the app
-              works fully without it).</li>
-            <li><strong>RECEIVE_BOOT_COMPLETED</strong> — to reschedule local notifications after the
-              device restarts.</li>
-            <li><strong>SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM</strong> — to deliver notifications at
-              the times you configure.</li>
-          </ul>
-          <p>No permission is used to access your contacts, location, microphone, camera, or files.</p>
-
-          <h2>6. Children's Privacy</h2>
-          <p>
-            WildFocus is not directed at children under 13. We do not knowingly collect personal
-            information from anyone, including children. Because no data leaves your device, there is
-            no risk of unintentional collection.
-          </p>
-
-          <h2>7. Data Security</h2>
-          <p>
-            Because all data is stored locally on your device, security depends on your device's own
-            security mechanisms (lock screen, encryption). We recommend keeping your device software
-            up to date.
-          </p>
-
-          <h2>8. Changes to This Policy</h2>
-          <p>
-            We may update this Privacy Policy as the app evolves (for example, if we add new features
-            that handle data differently). Any changes will be reflected on this page with an updated
-            date. The URL of this page remains constant, so you can bookmark it for reference.
-          </p>
-
-          <h2>9. Contact</h2>
-          <p>
-            If you have questions or concerns about this Privacy Policy, please contact us at:<br />
-            <a href="mailto:focalstudio.apps@gmail.com">focalstudio.apps@gmail.com</a>
-          </p>
-
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <!-- ── Footer ───────────────────────────────────────────── -->
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <span class="footer-copy">&copy; 2026 Focal Studio</span>
-      <nav class="footer-links" aria-label="Footer navigation">
-        <a href="contact.html">Contact</a>
-        <a href="privacy-policy.html">Privacy Policy</a>
-      </nav>
-    </div>
-  </footer>
-
-  <script src="assets/script.js?v=20260508"></script>
+    <footer>
+      &copy; 2026 Focal Studio. All rights reserved.
+    </footer>
+  </div>
 </body>
 </html>
