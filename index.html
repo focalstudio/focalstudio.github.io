@@ -3,123 +3,176 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Focal Studio — Indie App Studio</title>
-  <meta name="description" content="Focal Studio builds small, focused apps that respect your privacy. No tracking, no accounts, just software that works." />
+  <title>Focal Studio — Independent App Studio</title>
+  <meta name="description" content="Focal Studio is an independent app studio making small, focused, privacy-first apps for iPhone and Android." />
+  <meta name="theme-color" content="#0B0B0D" />
   <!-- Open Graph / Twitter -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://fpmartinez10.github.io/" />
-  <meta property="og:title" content="Focal Studio — Indie App Studio" />
-  <meta property="og:description" content="Focal Studio builds small, focused apps that respect your privacy. No tracking, no accounts, just software that works." />
+  <meta property="og:url" content="https://focalstudio.github.io/" />
+  <meta property="og:title" content="Focal Studio — Independent App Studio" />
+  <meta property="og:description" content="Focal Studio is an independent app studio making small, focused, privacy-first apps for iPhone and Android." />
   <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://fpmartinez10.github.io/" />
-  <meta property="twitter:title" content="Focal Studio — Indie App Studio" />
-  <meta property="twitter:description" content="Focal Studio builds small, focused apps that respect your privacy. No tracking, no accounts, just software that works." />
-  <link rel="stylesheet" href="assets/styles.css?v=20260508" />
+  <meta property="twitter:url" content="https://focalstudio.github.io/" />
+  <meta property="twitter:title" content="Focal Studio — Independent App Studio" />
+  <meta property="twitter:description" content="Focal Studio is an independent app studio making small, focused, privacy-first apps for iPhone and Android." />
+  <link rel="icon" href="assets/brand/aperture.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="assets/styles.css?v=20261005" />
+  <script>
+    /* Lens-focus intro: once per session, never with reduced motion */
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      try {
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('fs-intro-seen')) {
+          d.classList.add('intro');
+          sessionStorage.setItem('fs-intro-seen', '1');
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- ── Navigation ───────────────────────────────────────── -->
   <nav class="site-nav" aria-label="Main navigation">
     <div class="container nav-inner">
-      <!-- REPLACE: update the logo name if you prefer a different display name -->
-      <a href="index.html" class="nav-logo">Focal Studio</a>
+      <a href="index.html" class="nav-logo" aria-label="Focal Studio — home">
+        <svg class="logo-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 7.4L21.94 13.14M15.98 9.7L15.98 21.17M15.98 14.3L6.05 20.04M12 16.6L2.06 10.86M8.02 14.3L8.02 2.83M8.02 9.7L17.95 3.96"/></svg>
+        <span>focal<span class="nav-logo-sub"> studio</span></span>
+      </a>
 
-      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
         <span></span><span></span><span></span>
       </button>
 
-      <ul class="nav-links">
-        <li><a href="index.html" class="active">Home</a></li>
-        <li><a href="apps.html">My Apps</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="apps.html">Apps</a></li>
+        <li><a href="index.html#studio">Studio</a></li>
+        <li><a href="contact.html" class="nav-cta">Get in touch</a></li>
       </ul>
     </div>
   </nav>
 
-  <main>
+  <main id="main">
 
-    <section class="app-strip-shell" data-app-carousel></section>
-
-    <!-- ── Hero ─────────────────────────────────────────────── -->
+    <!-- ── Hero: copy + app orbit ───────────────────────────── -->
     <section class="hero">
       <div class="container">
-        <p class="hero-eyebrow">Indie App Studio</p>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span>Independent app studio</p>
 
-        <h1 class="hero-title">
-          Apps that help you use your phone less and do more.
-        </h1>
+            <h1 class="hero-title">
+              Small apps that do <span class="serif accent">one thing</span> well.
+            </h1>
 
-        <p class="hero-subtitle">
-          Small, focused tools built around privacy-first principles.
-          No accounts. No tracking. Just software that works.
-        </p>
-
-        <a href="apps.html" class="btn btn-primary">See Our Apps</a>
-      </div>
-    </section>
-
-    <!-- ── Featured apps ─────────────────────────────────────── -->
-    <section class="section">
-      <div class="container">
-        <p class="section-label">Apps</p>
-        <h2 class="section-title">What we've built</h2>
-        <p class="section-intro">
-          Each app solves one problem, stays out of your way, and keeps all your data on your device.
-        </p>
-
-        <div class="app-grid">
-          <!-- ── ADD NEW APP: copy this .app-card block for each new app ── -->
-          <article class="app-card">
-            <div class="app-card-icon">🐾</div>
-            <h3 class="app-card-name">WildFocus</h3>
-            <p class="app-card-tagline">
-              Turn your focus sessions into a pet collection. Beat procrastination one timer at a time.
+            <p class="hero-subtitle">
+              Focused tools built around privacy-first principles.
+              No accounts. No tracking. Just software that works.
             </p>
-            <div class="badge-group">
-              <span class="badge-platform">Android</span>
-              <span class="badge-platform badge-platform--iphone">iPhone</span>
+
+            <div class="hero-actions">
+              <a href="#catalog" class="btn btn-primary">Explore the catalog <span class="btn-arrow" aria-hidden="true">→</span></a>
+              <a href="contact.html" class="btn btn-ghost">Get in touch</a>
             </div>
-            <a href="app-wildfocus.html" class="app-card-link">View App →</a>
-          </article>
-          <!-- ── END APP CARD ── -->
-        </div>
-      </div>
-    </section>
-
-    <!-- ── About ─────────────────────────────────────────────── -->
-    <section class="section">
-      <div class="container">
-        <p class="section-label">About</p>
-        <h2 class="section-title">What we build and why</h2>
-
-        <div class="about-block">
-          <!-- REPLACE: update this about copy if needed -->
-          <p>
-            Focal Studio is an indie app studio focused on building apps that are genuinely useful —
-            not growth-hacked, not ad-supported, not harvesting your data.
-          </p>
-          <p>
-            Our apps are small by design. Each one does one thing well.
-            We care about privacy, honest UX, and shipping software that respects the person using it.
-          </p>
-          <p>
-            Everything is built with Capacitor and Ionic, keeping the codebase cross-platform
-            and the experience native-feeling.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── Contact CTA ───────────────────────────────────────── -->
-    <section class="section">
-      <div class="container">
-        <div class="cta-strip">
-          <div class="cta-strip-text">
-            <h2>Want to get in touch?</h2>
-            <p>Have feedback on an app, a collaboration idea, or just want to say hello.</p>
           </div>
-          <a href="contact.html" class="btn btn-outline">Contact me</a>
+
+          <!-- Rendered from assets/apps.json -->
+          <div data-app-orbit></div>
+        </div>
+
+        <div class="stats" data-stats aria-label="Studio at a glance"></div>
+      </div>
+    </section>
+
+    <!-- ── Catalog ──────────────────────────────────────────── -->
+    <section class="section" id="catalog" aria-labelledby="catalog-title">
+      <div class="container">
+        <div class="section-head section-head--split">
+          <div>
+            <p class="section-label">01 — Catalog</p>
+            <h2 class="section-title reveal" id="catalog-title">The <span class="serif">catalog</span></h2>
+          </div>
+          <p class="section-intro reveal" style="--i:1">
+            Each app solves one problem, stays out of your way, and keeps your data on your device.
+          </p>
+        </div>
+
+        <div class="catalog catalog--home" data-catalog="home"></div>
+        <noscript><div class="container"><p class="empty-state">The app catalog needs JavaScript. You can still <a class="accent" href="contact.html">get in touch</a>.</p></div></noscript>
+      </div>
+    </section>
+
+    <!-- ── Studio ───────────────────────────────────────────── -->
+    <section class="section" id="studio" aria-labelledby="studio-title">
+      <div class="container">
+        <div class="section-head section-head--split">
+          <div>
+            <p class="section-label">02 — Studio</p>
+            <h2 class="section-title reveal" id="studio-title">A studio built around <span class="serif accent">focus</span>.</h2>
+          </div>
+          <p class="section-intro reveal" style="--i:1">
+            Focal Studio builds apps that are genuinely useful — not growth-hacked,
+            not ad-supported, not harvesting your data.
+          </p>
+        </div>
+
+        <div class="principles">
+          <div class="principle reveal">
+            <span class="principle-num">/01</span>
+            <h3>Privacy-first</h3>
+            <p>Your data stays on your device. No accounts to create, no profiles to build, nothing to sell.</p>
+          </div>
+          <div class="principle reveal" style="--i:1">
+            <span class="principle-num">/02</span>
+            <h3>One thing, well</h3>
+            <p>Our apps are small by design. Each one solves a single real problem and then gets out of the way.</p>
+          </div>
+          <div class="principle reveal" style="--i:2">
+            <span class="principle-num">/03</span>
+            <h3>Honest by default</h3>
+            <p>No dark patterns, no ads, no growth hacks. Software that respects the person using it.</p>
+          </div>
+        </div>
+
+        <div class="pipeline" aria-label="How an app ships">
+          <div class="pipeline-step reveal">
+            <span class="pill pill--in-development">In development</span>
+            <span class="pipeline-count" data-count="in-development" aria-hidden="true"></span>
+            <h3>Built in the studio</h3>
+            <p>Prototyped, tested and refined until it feels effortless.</p>
+          </div>
+          <div class="pipeline-step reveal" style="--i:1">
+            <span class="pill pill--coming-soon">Coming soon</span>
+            <span class="pipeline-count" data-count="coming-soon" aria-hidden="true"></span>
+            <h3>On the launchpad</h3>
+            <p>Announced here first, then submitted to the stores.</p>
+          </div>
+          <div class="pipeline-step reveal" style="--i:2">
+            <span class="pill pill--released">Out now</span>
+            <span class="pipeline-count" data-count="released" aria-hidden="true"></span>
+            <h3>In your pocket</h3>
+            <p>Live on the App Store or Google Play, and still improving.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Contact CTA ──────────────────────────────────────── -->
+    <section class="section" aria-labelledby="cta-title">
+      <div class="container">
+        <div class="cta-panel reveal">
+          <div>
+            <p class="section-label">03 — Say hello</p>
+            <h2 id="cta-title">Feedback, ideas, or a <span class="serif">collaboration</span>?</h2>
+            <p>We read everything — whether it's a bug report, a feature request, or just a hello.</p>
+          </div>
+          <a href="contact.html" class="btn btn-primary">Get in touch <span class="btn-arrow" aria-hidden="true">→</span></a>
         </div>
       </div>
     </section>
@@ -128,16 +181,43 @@
 
   <!-- ── Footer ───────────────────────────────────────────── -->
   <footer class="site-footer">
-    <div class="container footer-inner">
-      <!-- REPLACE: update the copyright name if needed -->
-      <span class="footer-copy">&copy; 2026 Focal Studio</span>
-      <nav class="footer-links" aria-label="Footer navigation">
-        <a href="contact.html">Contact</a>
-        <a href="privacy-policy.html">Privacy Policy</a>
-      </nav>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="nav-logo" aria-label="Focal Studio — home">
+            <svg class="logo-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 7.4L21.94 13.14M15.98 9.7L15.98 21.17M15.98 14.3L6.05 20.04M12 16.6L2.06 10.86M8.02 14.3L8.02 2.83M8.02 9.7L17.95 3.96"/></svg>
+            <span>focal<span class="nav-logo-sub"> studio</span></span>
+          </a>
+          <p class="footer-tagline">An independent studio making small, focused apps for iPhone and Android.</p>
+        </div>
+
+        <nav class="footer-col" aria-labelledby="footer-studio">
+          <h2 id="footer-studio">Studio</h2>
+          <ul>
+            <li><a href="apps.html">All apps</a></li>
+            <li><a href="index.html#studio">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </nav>
+
+        <nav class="footer-col" aria-labelledby="footer-elsewhere">
+          <h2 id="footer-elsewhere">Elsewhere</h2>
+          <ul>
+            <li><a href="https://www.tiktok.com/@focalstudio_apps" target="_blank" rel="noopener noreferrer">TikTok</a></li>
+            <li><a href="https://www.reddit.com/user/FocalStudio/" target="_blank" rel="noopener noreferrer">Reddit</a></li>
+            <li><a href="privacy-policy.html">Privacy policy</a></li>
+            <li><a href="terms.html">Terms of service</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; 2026 Focal Studio</span>
+        <span>Made with focus.</span>
+      </div>
     </div>
   </footer>
 
-  <script src="assets/script.js?v=20260508"></script>
+  <script src="assets/script.js?v=20261005"></script>
 </body>
 </html>

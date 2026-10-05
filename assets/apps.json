@@ -1,0 +1,180 @@
+{
+  "studio": {
+    "appStoreDeveloperIds": [
+      1896557823
+    ],
+    "playDeveloperNames": [
+      "Focal Studio",
+      "Felipe Perez Martinez"
+    ]
+  },
+  "apps": [
+    {
+      "slug": "wildfocus",
+      "name": "WildFocus",
+      "tagline": "Turn your focus sessions into a pet collection.",
+      "description": "Every timer you complete earns you a new creature. Beat procrastination one Pomodoro at a time.",
+      "status": "released",
+      "color": "#E8B48F",
+      "icon": "assets/app-icons/wildfocus.jpeg",
+      "platforms": [
+        "ios",
+        "android"
+      ],
+      "bundleId": "com.fpmartinez10.wildfocus",
+      "androidPackage": "com.fpmartinez10.wildfocus",
+      "appStoreUrl": "https://apps.apple.com/us/app/pomodoro-timer-wild-focus/id6768295599",
+      "playStoreUrl": null,
+      "betaUrl": null,
+      "privacyUrl": "privacy-policy.html",
+      "releasedAt": "2026-06-02",
+      "featured": true,
+      "detail": {
+        "problem": [
+          "Most productivity apps treat focus like a chore. You set a timer, stare at a countdown, and feel guilty every time you break it. The discipline is all stick, no carrot.",
+          "Procrastination isn't a willpower failure — it's a motivation problem. When the reward for finishing a task is just… the next task, it's hard to start at all."
+        ],
+        "solution": [
+          "WildFocus adds a tangible reward loop to the Pomodoro technique. Complete a focus session and you earn a random pet — common, rare, or legendary. Your collection grows with your focus streak.",
+          "It keeps everything on your device. No account required, no notifications from a server, no data leaving your phone. The gamification is lightweight and honest — it's there to help you build a habit, not to hook you into the app."
+        ],
+        "features": [
+          {
+            "icon": "⏱️",
+            "title": "Focus Timer",
+            "text": "Configurable Pomodoro-style sessions with custom durations and break reminders."
+          },
+          {
+            "icon": "🐾",
+            "title": "Pet Collection",
+            "text": "Earn a random pet after each session. Common, rare, epic, and legendary tiers."
+          },
+          {
+            "icon": "🔥",
+            "title": "Daily Streaks",
+            "text": "Track your daily focus habit and protect your streak with consistency."
+          },
+          {
+            "icon": "🏆",
+            "title": "Achievements",
+            "text": "Unlock milestones for total sessions, streak lengths, and rare pet discoveries."
+          },
+          {
+            "icon": "🎯",
+            "title": "Daily Challenges",
+            "text": "Optional daily goals that reward bonus tokens for completing extra sessions."
+          },
+          {
+            "icon": "🔔",
+            "title": "Local Notifications",
+            "text": "Streak reminders and session nudges, scheduled entirely on your device — no server involved."
+          },
+          {
+            "icon": "🔒",
+            "title": "Private by Design",
+            "text": "No account, no analytics, no ads. All data stays on your device. Export / import any time."
+          },
+          {
+            "icon": "🌗",
+            "title": "Light & Dark Mode",
+            "text": "Follows system theme or set it manually. Works comfortably at any time of day."
+          }
+        ],
+        "screenshots": [
+          {
+            "src": "assets/screenshots/Timer.png",
+            "alt": "WildFocus focus timer — stay focused, save an animal"
+          },
+          {
+            "src": "assets/screenshots/Rescue.png",
+            "alt": "WildFocus rescue screen — longer focus earns rarer animals"
+          },
+          {
+            "src": "assets/screenshots/Collection.png",
+            "alt": "WildFocus collection screen — grow your animal collection"
+          },
+          {
+            "src": "assets/screenshots/Fun_facts.png",
+            "alt": "WildFocus animal detail — learn fun facts about animals"
+          },
+          {
+            "src": "assets/screenshots/Progress.png",
+            "alt": "WildFocus progress screen — track your focus, build discipline"
+          },
+          {
+            "src": "assets/screenshots/Achievements.png",
+            "alt": "WildFocus achievements — achievements that motivate"
+          }
+        ],
+        "tech": {
+          "Platform": "iPhone · Android",
+          "Built with": "Capacitor, Ionic, TypeScript",
+          "Data storage": "Local device storage only — no cloud, no server",
+          "Permissions": "Notifications only (optional)",
+          "Analytics": "None",
+          "Ads": "None"
+        }
+      }
+    },
+    {
+      "slug": "mealcart",
+      "name": "MealCart",
+      "tagline": "From recipe to shopping list in one tap.",
+      "status": "coming-soon",
+      "color": "#4E9A6E",
+      "icon": "assets/app-icons/mealcart.png",
+      "platforms": [
+        "ios",
+        "android"
+      ],
+      "bundleId": "com.focalstudio.mealcart",
+      "androidPackage": "com.focalstudio.mealcart",
+      "appStoreUrl": null,
+      "playStoreUrl": null,
+      "betaUrl": null,
+      "privacyUrl": "privacy-mealcart.html",
+      "releasedAt": null,
+      "featured": false
+    },
+    {
+      "slug": "staylock",
+      "name": "StayLock",
+      "tagline": "Block distractions on a schedule.",
+      "status": "coming-soon",
+      "color": "#2F7BFF",
+      "icon": "assets/app-icons/staylock.png",
+      "platforms": [
+        "ios",
+        "android"
+      ],
+      "bundleId": null,
+      "androidPackage": null,
+      "appStoreUrl": null,
+      "playStoreUrl": null,
+      "betaUrl": null,
+      "privacyUrl": null,
+      "releasedAt": null,
+      "featured": false
+    },
+    {
+      "slug": "vestia",
+      "name": "Vestia",
+      "tagline": "Rules-based investing discipline for long-term investors.",
+      "status": "coming-soon",
+      "color": "#5B8CF5",
+      "icon": "assets/app-icons/vestia.png",
+      "platforms": [
+        "ios",
+        "android"
+      ],
+      "bundleId": "com.vestia.app",
+      "androidPackage": "com.vestia.app",
+      "appStoreUrl": null,
+      "playStoreUrl": null,
+      "betaUrl": null,
+      "privacyUrl": null,
+      "releasedAt": null,
+      "featured": false
+    }
+  ]
+}
