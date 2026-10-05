@@ -171,6 +171,26 @@
       "privacyUrl": null,
       "releasedAt": null,
       "featured": false
+    },
+    {
+      "slug": "tick",
+      "name": "Tick",
+      "tagline": "A beautiful clock for your desk",
+      "status": "coming-soon",
+      "color": "#5B6CE8",
+      "icon": "assets/app-icons/tick.png",
+      "platforms": [
+        "ios",
+        "android"
+      ],
+      "bundleId": "com.focalstudio.tick",
+      "androidPackage": "com.focalstudio.tick",
+      "appStoreUrl": null,
+      "playStoreUrl": null,
+      "betaUrl": null,
+      "privacyUrl": null,
+      "releasedAt": null,
+      "featured": false
     }
   ]
 }
