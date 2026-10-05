@@ -15,6 +15,7 @@ on:
     paths:
       - "assets/apps.json"
       - "assets/app-icons/**"
+      - "assets/screenshots/**"
       - "scripts/**"
   workflow_dispatch:
 

@@ -35,7 +35,6 @@ const headlines = []; // short phrases for the PR title
 
 async function get(url) {
   const res = await fetch(url, {
-    redirect: 'manual',
     headers: { 'user-agent': 'focalstudio-store-watch (+https://focalstudio.github.io)' },
     signal: AbortSignal.timeout(20000),
   });

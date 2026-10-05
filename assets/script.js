@@ -591,10 +591,13 @@
 
   /* ── Hash targets on the catalog (apps.html#app-wildfocus) ── */
 
+  /* Only app cards are centered; section anchors (#main, #studio) keep normal scrolling */
   function centerHashTarget() {
     if (!window.location.hash) return;
-    var target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
-    if (!target) return;
+    var id;
+    try { id = decodeURIComponent(window.location.hash.slice(1)); } catch (e) { return; }
+    var target = document.getElementById(id);
+    if (!target || !target.classList.contains('app-card')) return;
     window.requestAnimationFrame(function () {
       target.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth', block: 'center' });
     });
@@ -620,6 +623,9 @@
     });
     observeReveals();
   }
+
+  /* Static content reveals right away; app content reveals again after it renders */
+  observeReveals();
 
   /* Every page loads the catalog: even pages without a catalog show the beta bar */
   fetch(APPS_URL, { cache: 'no-cache' })

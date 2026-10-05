@@ -15,13 +15,14 @@
 //                those belong to the store watcher and to humans.
 // In GitHub Actions it also writes `changed` and `title` to $GITHUB_OUTPUT.
 
-import { readFileSync, writeFileSync, copyFileSync, existsSync, statSync, appendFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, copyFileSync, existsSync, statSync, appendFileSync, unlinkSync } from 'node:fs';
 import { resolve, dirname, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const FILE = resolve(ROOT, 'assets/apps.json');
-const STATUSES = ['in-development', 'coming-soon', 'released'];
+// Registration only announces apps; "released" is set by the store watcher once a listing exists.
+const STATUSES = ['in-development', 'coming-soon'];
 const ICON_WARN_BYTES = 300 * 1024;
 
 const args = process.argv.slice(2);
@@ -81,10 +82,12 @@ const data = JSON.parse(readFileSync(FILE, 'utf8'));
 const privacyPage = `privacy-${slug}.html`;
 const hasPrivacyPage = existsSync(resolve(ROOT, privacyPage));
 const existing = data.apps.find((a) => a.slug === slug);
+const previousIcon = existing ? existing.icon : null;
 const changes = [];
 let title;
 
 if (!existing) {
+  if (!icon) fail('a new app needs --icon <file>');
   data.apps.push({
     slug,
     name,
@@ -109,7 +112,7 @@ if (!existing) {
   if (platforms.length) next.platforms = platforms;
   if (!existing.privacyUrl && hasPrivacyPage) next.privacyUrl = privacyPage;
   for (const [key, value] of Object.entries(next)) {
-    if (value == null && key !== 'color') continue; // never blank a field we could not read
+    if (value == null) continue; // never blank a field we could not read
     if (JSON.stringify(existing[key]) !== JSON.stringify(value)) {
       changes.push(`- \`${key}\`: \`${JSON.stringify(existing[key])}\` → \`${JSON.stringify(value)}\``);
       existing[key] = value;
@@ -117,6 +120,13 @@ if (!existing) {
   }
   title = `chore(catalog): refresh ${name}`;
   if (changes.length) changes.unshift(`Refreshed **${name}** (\`${slug}\`). Its status (\`${existing.status}\`) is unchanged.`);
+}
+
+// An icon whose extension changed leaves the old file behind; remove it if nothing else uses it.
+if (existing && icon && previousIcon && previousIcon !== icon && previousIcon.startsWith('assets/app-icons/') &&
+    !data.apps.some((a) => a.icon === previousIcon) && existsSync(resolve(ROOT, previousIcon))) {
+  unlinkSync(resolve(ROOT, previousIcon));
+  changes.push(`- Removed the old icon file \`${previousIcon}\`.`);
 }
 
 // A new icon at the same path still needs a PR, even though apps.json is unchanged.
