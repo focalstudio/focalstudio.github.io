@@ -1,26 +1,32 @@
 # Focal Studio Website
 
-Static marketing website for Focal Studio, published with GitHub Pages.
+The studio site and app catalog for Focal Studio, published with GitHub Pages at
+https://focalstudio.github.io.
 
 ## Overview
-- Stack: plain HTML, CSS, and JavaScript.
-- No build step, framework, or package manager is required.
-- Main purpose: present the studio, list apps, link to app details, and host the privacy policy.
+- Stack: plain HTML, CSS, and JavaScript. There is no build step, framework, or package manager.
+- Every app surface (the hero orbit, the catalog, the app pages, the stats) renders from **one file: `assets/apps.json`**.
+- Adding, announcing, or releasing an app is a data change, never a markup change. Most of those changes are made by automation (see [How apps get onto the site](#how-apps-get-onto-the-site)).
 
 ## Site Structure
-- `index.html`: homepage.
-- `apps.html`: app catalog with Released, In Development, and Coming Soon sections.
-- `app-wildfocus.html`: detail page for WildFocus.
+- `index.html`: homepage. Hero with the app orbit, catalog, studio principles, contact CTA.
+- `apps.html`: the full catalog, with status filters.
+- `app.html?app=<slug>`: the page for any app, generated from its `apps.json` entry.
+- `app-wildfocus.html`: redirects to `app.html?app=wildfocus` so old links keep working.
 - `contact.html`: contact links.
-- `privacy-policy.html`: privacy policy page.
-- `assets/styles.css`: shared site styles.
-- `assets/script.js`: shared interactive behavior, including the global app carousel data and renderer.
-- `assets/app-icons/`: shared carousel icon assets.
-- `assets/screenshots/`: screenshots used on app detail pages.
-- `docs/issue-drafts/`: draft implementation notes and issue writeups.
+- `privacy-policy.html`, `privacy-<slug>.html`, `terms.html`: legal pages. These are self-contained and published by each app repo's `publish-privacy.yml`. **Do not restyle or hand-edit them.**
+- `assets/apps.json`: the catalog data.
+- `assets/styles.css`: the design system (tokens at the top).
+- `assets/script.js`: the renderers (orbit, catalog, detail page, stats, beta bar).
+- `assets/app-icons/`: app icons. Square, about 384px.
+- `assets/brand/aperture.svg`: the aperture mark and favicon.
+- `scripts/validate-apps.mjs`: checks `apps.json`.
+- `scripts/check-stores.mjs`: the store watcher.
+- `scripts/register-app.mjs`: adds or refreshes one app. The template's `register-website.yml` calls it.
+- `.github/workflows/`: `validate.yml` (catalog checks on every PR) and `store-watch.yml` (daily store check).
 
 ## Local Preview
-Because this is a static site, you can preview it with any simple local server from the repo root.
+`assets/apps.json` is loaded with `fetch`, so use a local server. Opening the files directly from disk won't work.
 
 ```bash
 python3 -m http.server 8000
@@ -28,81 +34,103 @@ python3 -m http.server 8000
 
 Then open `http://localhost:8000`.
 
+## How apps get onto the site
+
+```
+ new app from focal-studio-app-template ──► register-website.yml (in the app repo)
+                                              opens a PR here: status "coming-soon"
+                                                          │  you merge
+                                                          ▼
+ app goes live on a store ──────────────────► store-watch.yml (daily, here)
+                                              opens a PR here: status "released" + store link
+                                                          │  you merge
+                                                          ▼
+                                              GitHub Pages publishes it
+```
+
+The bots only ever open PRs. Nothing merges without you.
+
+### Statuses
+| `status` | Shown as | Card CTA |
+|---|---|---|
+| `in-development` | In development, or **In beta** when `betaUrl` is set | "Join the beta" (also shows the beta bar on every page) |
+| `coming-soon` | Coming soon | "Sneak peek": the app page with a "Notify me" email link |
+| `released` | Out now | "View app": the app page with App Store / Google Play buttons |
+
+### The store watcher
+`store-watch.yml` runs `scripts/check-stores.mjs` every day at 07:17 UTC. It is free and needs no keys.
+
+1. **App Store:** for each app with a `bundleId` and no `appStoreUrl`, it queries the public iTunes Lookup API.
+2. **Ownership check:** a hit only counts if its developer ID is in `studio.appStoreDeveloperIds` in `apps.json`. Bundle IDs are not proof of ownership; another developer can hold the same ID. Listings under any other developer are reported and ignored.
+3. **On a match:** the app gets `status: "released"`, its App Store URL and `releasedAt`. If the icon file is missing, the store icon is downloaded.
+
+Never downgrades anything: if a listing disappears, the entry is left for you to decide.
+
+**Google Play is not watched.** Its listings can't be checked reliably without scraping. A released app that lists `android` shows a dimmed, unlinked "Coming soon on Google Play" badge next to its App Store button. When it launches on Play, set `playStoreUrl` by hand and the badge becomes a real link.
+
+Try it locally with `node scripts/check-stores.mjs --dry-run`, or run the workflow by hand from **Actions → Store watch → Run workflow** (it has a `dry_run` option).
+
+**One-time setup:** in Settings → Actions → General, enable **"Allow GitHub Actions to create and approve pull requests"**.
+
+### Registering an app from its repo
+The template ships `register-website.yml`, a reusable workflow, plus a stub that triggers it. It runs in the app's repo and:
+
+1. reads the app's name, slug, bundle ID and package from `app.json`, its tagline and primary color from `IDEA.md`, and its icon;
+2. clones this repo and runs `scripts/register-app.mjs`, then `scripts/validate-apps.mjs`;
+3. opens or updates a PR from the `register/<slug>` branch.
+
+A new app arrives as `coming-soon`. For an app that's already listed, only its identity fields (name, tagline, color, icon, IDs) are refreshed; its status, store links and page copy are never touched.
+
+### Editing an app by hand
+Edit its entry in `assets/apps.json`, then run `node scripts/validate-apps.mjs`. Fields:
+
+```jsonc
+{
+  "slug": "mealcart",                 // URL id: app.html?app=mealcart
+  "name": "MealCart",
+  "tagline": "From recipe to shopping list in one tap.",
+  "description": "Optional second sentence for the featured card and app page.",
+  "status": "coming-soon",            // in-development | coming-soon | released
+  "color": "#4E9A6E",                 // glow color around the icon
+  "icon": "assets/app-icons/mealcart.png",
+  "platforms": ["ios", "android"],
+  "bundleId": "com.focalstudio.mealcart",       // App Store lookup key
+  "androidPackage": "com.focalstudio.mealcart", // informational (Play is not watched)
+  "appStoreUrl": null,                          // filled in by the store watcher
+  "playStoreUrl": null,                         // set by hand when it launches on Play
+  "betaUrl": null,                    // TestFlight / Play testing link
+  "privacyUrl": "privacy-mealcart.html",
+  "releasedAt": null,
+  "featured": false,                  // the featured app gets the wide card with screenshots
+  "detail": {                         // optional: richer app page
+    "problem": ["…"], "solution": ["…"],
+    "features": [{ "icon": "⏱️", "title": "…", "text": "…" }],
+    "screenshots": [{ "src": "assets/screenshots/x.png", "alt": "…" }],
+    "tech": { "Built with": "…" }
+  }
+}
+```
+
+With Claude Code, you can also just ask: the `site-apps` project skill (`.claude/skills/site-apps/`) knows this schema. For example, "write the feature list for MealCart" or "add a TestFlight link for StayLock".
+
+## Design system
+- **Look:** a dark "optical lab". Near-black glass, an aperture mark, Geist and Geist Mono, with Instrument Serif italic for accent words.
+- **Tokens:** defined at the top of `assets/styles.css` (`--bg`, `--surface`, `--accent`, `--status-*`, …). Reuse them rather than adding one-off colors.
+- **Motion budget:** one lens-focus intro (once per session, skipped for reduced motion), the slow app orbit, and fade-up on scroll. Nothing else loops.
+- **The orbit:**
+  - Shipped and beta apps sit on the inner ring; coming-soon apps sit on the dashed outer ring.
+  - Each ring holds up to 6 apps. More apps automatically start a new ring.
+  - It pauses on hover or focus, and stops when it's off-screen.
+- **Cache-busting:** after changing shared CSS or JS, bump the `?v=` query string on the asset URLs in every page.
+
 ## Editing Workflow
 - Check repo state before editing: `git status --short --branch`.
 - Never work directly on `main`; use `feat/*`, `fix/*`, or `docs/*`.
 - Keep changes minimal and scoped to the request.
-- Preserve the existing visual style unless a redesign is requested.
-- Reuse existing CSS and avoid unnecessary dependencies.
-- Keep HTML accessible and external links safe with `rel="noopener noreferrer"`.
-- Do not modify unrelated files.
-
-## Important Repo Files
-- `AGENTS.md`: repo-wide instructions for coding agents and contributors.
-- `assets/AGENTS.md`: extra guidance for shared CSS, JS, and image assets.
-- `CHANGELOG.md`: notable repository changes.
-- `CLAUDE.md`: existing lightweight instruction profile kept in the repo.
-
-## Global App Carousel
-The global app carousel appears near the top of every page and is rendered from shared metadata in `assets/script.js`.
-
-### How it works
-- App entries live in `FOCAL_STUDIO_APPS`.
-- Lane definitions live in `FOCAL_STUDIO_APP_LANES`.
-- Each app is assigned a `status`:
-  - `released`
-  - `in-development`
-  - `coming-soon`
-- The renderer injects the carousel into every page section marked with `data-app-carousel`.
-- Links should point to stable anchors in `apps.html`.
-
-### How to update carousel images
-1. Add the new icon file to `assets/app-icons/`.
-2. Prefer a square asset. PNG is the expected default, but JPEG, SVG, and other common web image formats also work.
-3. Update the matching app entry in `FOCAL_STUDIO_APPS` inside `assets/script.js`.
-4. Set the `icon` field to the new file path, for example `assets/app-icons/my-app.svg`.
-5. Make sure the `href` points to a stable target in `apps.html`, such as `apps.html#app-my-app`.
-6. If the target does not exist yet, add an `id` to the correct app card or section in `apps.html`.
-
-The carousel currently shows image tiles only, without app names, so the icon should read clearly at small square sizes.
-
-Example:
-
-```js
-var FOCAL_STUDIO_APPS = [
-  {
-    id: 'app-wildfocus',
-    name: 'WildFocus',
-    status: 'released',
-    href: 'apps.html#app-wildfocus',
-    icon: 'assets/app-icons/wildfocus.jpeg'
-  },
-  {
-    id: 'app-my-app',
-    name: 'My App',
-    status: 'coming-soon',
-    href: 'apps.html#app-my-app',
-    icon: 'assets/app-icons/my-app.png'
-  }
-];
-```
-
-### How to add or move an app in the carousel
-1. Add or update the app entry in `FOCAL_STUDIO_APPS`.
-2. Set `status` to `released`, `in-development`, or `coming-soon`.
-3. Add or update the corresponding content in `apps.html`.
-4. If it is a released app, add the card and any detail page it should link to.
-5. If it is not yet released, ensure there is still a stable anchor in `apps.html` for the carousel link target.
+- Keep HTML accessible, and keep external links safe with `rel="noopener noreferrer"`.
 
 ## Validation Checklist
-- Confirm only intended files changed: `git diff --name-only`.
-- Run `git diff --check`.
-- Manually verify desktop and mobile layout for edited pages.
-- Check navigation, footer links, and shared components like the carousel.
-- Respect reduced-motion behavior when changing animated UI.
-- If shared CSS or JS changes do not appear in the browser, bump the cache-busting query string on shared asset URLs.
-
-## Current Content Notes
-- WildFocus is the only real released app currently represented in the repo content.
-- The carousel uses image-only square tiles and can work with PNG, JPEG, or SVG app icons.
-- `apps.html` includes commented templates for released, in-development, and coming-soon entries so new apps can be added quickly.
+- `node scripts/validate-apps.mjs` passes.
+- `git diff --check` is clean, and only intended files changed (`git diff --name-only`).
+- Check desktop and mobile (about 375px) for the pages you touched, including the orbit, the catalog, an app page, and the mobile nav.
+- Check with reduced motion on (macOS: System Settings → Accessibility → Display → Reduce motion).

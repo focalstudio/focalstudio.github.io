@@ -1,0 +1,73 @@
+name: Store watch
+
+# Once a day, checks the App Store and Google Play for every app in assets/apps.json.
+# When an app appears under the studio's developer account, it opens (or updates) one PR
+# flipping it to "released" with its store link. It never merges: that is a human's call.
+#
+# One-time setting: Settings → Actions → General → "Allow GitHub Actions to create and
+# approve pull requests". PRs opened with GITHUB_TOKEN do not trigger other workflows,
+# so validation runs here before the PR is opened.
+
+on:
+  schedule:
+    - cron: "17 7 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Report what the stores show, but do not open a PR"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: store-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: bot/store-watch
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check the stores
+        id: check
+        env:
+          DRY_RUN: ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: |
+          # shellcheck disable=SC2086
+          node scripts/check-stores.mjs $DRY_RUN --summary "$RUNNER_TEMP/summary.md"
+          cat "$RUNNER_TEMP/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Validate the result
+        if: steps.check.outputs.changed == 'true'
+        run: node scripts/validate-apps.mjs
+
+      - name: Open or update the PR
+        if: steps.check.outputs.changed == 'true' && !inputs.dry_run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: ${{ steps.check.outputs.title }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add assets/apps.json assets/app-icons
+          git commit -m "chore(catalog): $TITLE"
+          git push --force origin "$BRANCH"
+
+          EXISTING=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ]; then
+            gh pr edit "$EXISTING" --title "$TITLE" --body-file "$RUNNER_TEMP/summary.md"
+            echo "Updated PR #$EXISTING"
+          else
+            gh pr create --base main --head "$BRANCH" --title "$TITLE" --body-file "$RUNNER_TEMP/summary.md"
+          fi

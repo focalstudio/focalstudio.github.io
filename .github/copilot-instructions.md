@@ -19,7 +19,8 @@ This file defines default working rules for updates to the `focalstudio.github.i
 6. Open a PR to `main` with a concise summary and changed-file list.
 
 ## Editing rules
-- Preserve existing layout, tone, and structure unless asked to redesign.
+- Preserve existing layout, tone, and structure unless asked to redesign. Design tokens live at the top of `assets/styles.css`.
+- App content lives in `assets/apps.json`. Do not hard-code app cards or pages, and validate with `node scripts/validate-apps.mjs`.
 - Reuse existing CSS patterns before adding new classes.
 - Keep CSS additions small and close to relevant sections.
 - Use accessible HTML where possible (`aria-label`, meaningful link text).

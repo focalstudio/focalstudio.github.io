@@ -1,0 +1,34 @@
+name: Validate catalog
+
+# Checks assets/apps.json (fields, statuses, icon and screenshot files) on every PR that
+# touches the catalog, including the PRs opened by the template's register-website workflow.
+
+on:
+  pull_request:
+    paths:
+      - "assets/apps.json"
+      - "assets/app-icons/**"
+      - "assets/screenshots/**"
+      - "scripts/**"
+  push:
+    branches: [main]
+    paths:
+      - "assets/apps.json"
+      - "assets/app-icons/**"
+      - "assets/screenshots/**"
+      - "scripts/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate apps.json
+        run: node scripts/validate-apps.mjs

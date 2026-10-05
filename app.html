@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Apps — Focal Studio</title>
-  <meta name="description" content="The Focal Studio catalog: privacy-first apps for iPhone and Android — out now, in development, and coming soon." />
+  <title>App — Focal Studio</title>
+  <meta name="description" content="A Focal Studio app — privacy-first, no tracking, built for iPhone and Android." />
   <meta name="theme-color" content="#0B0B0D" />
   <!-- Open Graph / Twitter -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://focalstudio.github.io/apps.html" />
-  <meta property="og:title" content="Apps — Focal Studio" />
-  <meta property="og:description" content="The Focal Studio catalog: privacy-first apps for iPhone and Android — out now, in development, and coming soon." />
+  <meta property="og:url" content="https://focalstudio.github.io/app.html" />
+  <meta property="og:title" content="App — Focal Studio" />
+  <meta property="og:description" content="A Focal Studio app — privacy-first, no tracking, built for iPhone and Android." />
   <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://focalstudio.github.io/apps.html" />
-  <meta property="twitter:title" content="Apps — Focal Studio" />
-  <meta property="twitter:description" content="The Focal Studio catalog: privacy-first apps for iPhone and Android — out now, in development, and coming soon." />
+  <meta property="twitter:url" content="https://focalstudio.github.io/app.html" />
+  <meta property="twitter:title" content="App — Focal Studio" />
+  <meta property="twitter:description" content="A Focal Studio app — privacy-first, no tracking, built for iPhone and Android." />
   <link rel="icon" href="assets/brand/aperture.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -47,26 +47,9 @@
   </nav>
 
   <main id="main">
-
-    <div class="container">
-      <header class="page-header">
-        <div class="page-header-grid">
-          <div>
-            <p class="section-label">The catalog</p>
-            <h1>Every app, <span class="serif accent">in focus</span>.</h1>
-            <p>Small, focused apps — each one built to solve a single real problem. Released apps, what's in development, and what's coming next.</p>
-          </div>
-          <div class="orbit--compact" data-app-orbit data-orbit-compact></div>
-        </div>
-      </header>
-
-      <section class="section" style="padding-top:0" aria-label="Apps">
-        <div class="filters" data-catalog-filters role="group" aria-label="Filter apps by status"></div>
-        <div class="catalog" data-catalog="full"></div>
-        <noscript><div class="container"><p class="empty-state">The app catalog needs JavaScript. You can still <a class="accent" href="contact.html">get in touch</a>.</p></div></noscript>
-      </section>
-    </div>
-
+    <!-- Rendered from assets/apps.json using ?app=<slug> -->
+    <div data-app-detail></div>
+    <noscript><div class="container"><p class="empty-state">The app catalog needs JavaScript. You can still <a class="accent" href="contact.html">get in touch</a>.</p></div></noscript>
   </main>
 
   <!-- ── Footer ───────────────────────────────────────────── -->

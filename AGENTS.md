@@ -5,7 +5,9 @@ Repository guidance for coding agents working in `fpmartinez10.github.io`.
 ## Project
 - Static marketing site for Focal Studio.
 - Stack: plain HTML, CSS, and JavaScript with no build step.
-- Prioritize small, reviewable changes that preserve the existing visual language.
+- Prioritize small, reviewable changes that preserve the existing visual language (dark "optical lab" system; tokens at the top of `assets/styles.css`).
+- App content lives in `assets/apps.json` only. Never hard-code app cards or app pages; see README → "How apps get onto the site".
+- Legal pages (`privacy-*.html`, `terms.html`) are published from the app repos. Do not edit or restyle them.
 
 ## Workflow
 - Check `git status --short --branch` before editing.
@@ -20,7 +22,7 @@ Repository guidance for coding agents working in `fpmartinez10.github.io`.
 - Preserve content and design unless the request explicitly asks for a redesign.
 
 ## Editing constraints
-- Preserve existing visual style unless redesign is requested.
+- Preserve the existing visual style (design tokens in `assets/styles.css`) unless a redesign is requested.
 - Reuse existing CSS and avoid unnecessary dependencies.
 - Keep HTML accessible and external links safe (`noopener noreferrer`).
 - Do not modify unrelated files.
@@ -30,6 +32,7 @@ Repository guidance for coding agents working in `fpmartinez10.github.io`.
 - Do not revert user edits that were not part of the requested task.
 
 ## Validation
+- Run `node scripts/validate-apps.mjs` after touching `assets/apps.json`.
 - Confirm only intended files changed with `git diff --name-only`.
 - Manually verify edited pages on desktop and mobile.
 - Check navigation, footer links, and any shared UI added across pages.
