@@ -11,13 +11,15 @@ All notable changes to this repository will be documented in this file.
 - `assets/apps.json`: the single source of truth for every app surface. `app.html?app=<slug>` renders any app's page from it.
 - `apps.html` catalog with status filters, plus home stats and pipeline counts computed from the data.
 - `scripts/validate-apps.mjs` and the `validate.yml` workflow.
-- `scripts/check-stores.mjs` and the daily `store-watch.yml` workflow. It opens a PR when an app appears on the App Store or Google Play under the studio's developer account.
+- `scripts/check-stores.mjs` and the daily `store-watch.yml` workflow. It opens a PR when an app appears on the App Store under the studio's developer account (`studio.appStoreDeveloperIds`). Google Play is not watched.
+- Unlinked "Coming soon on Google Play" badge on released Android apps until `playStoreUrl` is set by hand.
+- `scripts/register-app.mjs`, the catalog side of the template's `register-website.yml` workflow.
 - `.claude/skills/site-apps` project skill for editing catalog entries with Claude Code.
 
 ### Changed
 - `app-wildfocus.html` is now a redirect to `app.html?app=wildfocus`.
 - WildFocus now links to its real App Store listing; the placeholder Google Play link is gone.
-- Vestia's tagline now describes the actual app (rules-based investing).
+- Vestia's tagline now describes the actual app (rules-based investing), and its IDs are now `com.focalstudio.vestia`. The old `com.vestia.app` belongs to another developer's App Store app (focalstudio/vestia-portfolio-manager#71).
 - App icons resized to 384px (4.6 MB → 0.45 MB).
 - README rewritten around the automated catalog workflow.
 

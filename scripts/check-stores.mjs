@@ -1,15 +1,16 @@
 #!/usr/bin/env node
-// Store watcher: checks the public App Store and Google Play listings for every app in
-// assets/apps.json and records what it finds. Once an app shows up on either store, it
-// becomes "released", with its store URL and release date filled in.
+// Store watcher: checks the public App Store listing for every app in assets/apps.json and
+// records what it finds. Once an app shows up, it becomes "released", with its App Store
+// URL and release date filled in.
 //
-// Free and keyless: the iTunes Lookup API is public, and a Play listing either exists (200)
-// or does not (404). Nothing is ever downgraded: a listing that disappears is left alone
-// for a human to decide.
+// Free and keyless: the iTunes Lookup API is public. Google Play is deliberately not
+// watched: its listings can't be checked reliably without scraping. Set `playStoreUrl` by
+// hand; until then the site shows an unlinked Google Play badge for Android apps. Nothing is
+// ever downgraded: a listing that disappears is left alone for a human to decide.
 //
 // Bundle IDs are not proof of ownership: another developer can hold the same ID (this
-// happened with com.vestia.app). A hit only counts when its developer matches the
-// `studio` block in apps.json; anything else is logged and ignored.
+// happened with com.vestia.app). A hit only counts when its developer ID is listed in the
+// `studio` block of apps.json; anything else is logged and ignored.
 //
 // Usage: node scripts/check-stores.mjs [--dry-run] [--summary <file>]
 // In GitHub Actions it also writes `changed` and `title` to $GITHUB_OUTPUT.
@@ -28,7 +29,6 @@ const today = new Date().toISOString().slice(0, 10);
 const data = JSON.parse(readFileSync(FILE, 'utf8'));
 const studio = data.studio || {};
 const appleIds = (studio.appStoreDeveloperIds || []).map(Number);
-const playNames = studio.playDeveloperNames || [];
 const changes = [];   // human-readable lines for the PR body
 const warnings = [];  // listings found under someone else's name
 const headlines = []; // short phrases for the PR title
@@ -58,18 +58,6 @@ async function lookupAppStore(bundleId) {
   };
 }
 
-async function lookupPlay(pkg) {
-  const url = `https://play.google.com/store/apps/details?id=${encodeURIComponent(pkg)}`;
-  const res = await get(`${url}&hl=en&gl=US`);
-  if (res.status === 200) {
-    const html = await res.text();
-    const owned = playNames.some((name) => html.includes(`>${name}<`) || html.includes(`dev?id=`) && html.includes(name));
-    return owned ? { url } : { foreign: `a listing not published under ${playNames.join(' / ') || '(no playDeveloperNames set)'}` };
-  }
-  if (res.status === 404) return null;
-  throw new Error(`Play HTTP ${res.status}`); // consent walls, rate limits: try again tomorrow
-}
-
 async function downloadIcon(app, artworkUrl) {
   const res = await get(artworkUrl);
   if (!res.ok) throw new Error(`artwork HTTP ${res.status}`);
@@ -80,7 +68,7 @@ async function downloadIcon(app, artworkUrl) {
 
 for (const app of data.apps) {
   const before = app.status;
-  const found = [];
+  let found = false;
 
   if (app.bundleId && !app.appStoreUrl) {
     try {
@@ -89,7 +77,7 @@ for (const app of data.apps) {
         warnings.push(`- **${app.name}**: App Store bundle ID \`${app.bundleId}\` belongs to ${hit.foreign}; ignored`);
       } else if (hit && hit.url) {
         app.appStoreUrl = hit.url;
-        found.push('App Store');
+        found = true;
         changes.push(`- **${app.name}** is live on the App Store: ${hit.url}`);
         if (!app.releasedAt && hit.released) app.releasedAt = hit.released;
         const iconMissing = !app.icon || !existsSync(resolve(ROOT, app.icon));
@@ -105,31 +93,14 @@ for (const app of data.apps) {
     }
   }
 
-  if (app.androidPackage && !app.playStoreUrl) {
-    try {
-      const hit = await lookupPlay(app.androidPackage);
-      if (hit && hit.foreign) {
-        warnings.push(`- **${app.name}**: Play package \`${app.androidPackage}\` is ${hit.foreign}; ignored`);
-      } else if (hit) {
-        app.playStoreUrl = hit.url;
-        found.push('Google Play');
-        changes.push(`- **${app.name}** is live on Google Play: ${hit.url}`);
-      } else {
-        console.log(`· ${app.name}: not on Google Play yet`);
-      }
-    } catch (err) {
-      console.warn(`! ${app.name}: Google Play check failed (${err.message})`);
-    }
-  }
-
-  if (found.length && app.status !== 'released') {
+  if (found && app.status !== 'released') {
     app.status = 'released';
     if (!app.releasedAt) app.releasedAt = today;
     changes.push(`  - Status: \`${before}\` → \`released\` (${app.releasedAt})`);
   }
 
-  if (found.length) headlines.push(`${app.name} is live on ${found.join(' and ')}`);
-  else if (!app.bundleId && !app.androidPackage) console.log(`· ${app.name}: no bundleId/androidPackage, skipped`);
+  if (found) headlines.push(`${app.name} is live on the App Store`);
+  else if (!app.bundleId) console.log(`· ${app.name}: no bundleId, skipped`);
 }
 
 const changed = changes.length > 0;

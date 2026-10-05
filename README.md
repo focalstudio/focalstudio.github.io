@@ -22,6 +22,7 @@ https://focalstudio.github.io.
 - `assets/brand/aperture.svg`: the aperture mark and favicon.
 - `scripts/validate-apps.mjs`: checks `apps.json`.
 - `scripts/check-stores.mjs`: the store watcher.
+- `scripts/register-app.mjs`: adds or refreshes one app. The template's `register-website.yml` calls it.
 - `.github/workflows/`: `validate.yml` (catalog checks on every PR) and `store-watch.yml` (daily store check).
 
 ## Local Preview
@@ -60,15 +61,25 @@ The bots only ever open PRs. Nothing merges without you.
 `store-watch.yml` runs `scripts/check-stores.mjs` every day at 07:17 UTC. It is free and needs no keys.
 
 1. **App Store:** for each app with a `bundleId` and no `appStoreUrl`, it queries the public iTunes Lookup API.
-2. **Google Play:** for each app with an `androidPackage` and no `playStoreUrl`, it requests the public Play listing.
-3. **Ownership check:** a hit only counts if the developer matches the `studio` block in `apps.json`: `appStoreDeveloperIds` for Apple, `playDeveloperNames` for Google. Bundle IDs are not proof of ownership; another developer can hold the same ID. Listings under any other developer are reported and ignored.
-4. **On a match:** the app gets `status: "released"`, its store URL and `releasedAt`. If the icon file is missing, the store icon is downloaded.
+2. **Ownership check:** a hit only counts if its developer ID is in `studio.appStoreDeveloperIds` in `apps.json`. Bundle IDs are not proof of ownership; another developer can hold the same ID. Listings under any other developer are reported and ignored.
+3. **On a match:** the app gets `status: "released"`, its App Store URL and `releasedAt`. If the icon file is missing, the store icon is downloaded.
 
 Never downgrades anything: if a listing disappears, the entry is left for you to decide.
+
+**Google Play is not watched.** Its listings can't be checked reliably without scraping. A released app that lists `android` shows a dimmed, unlinked "Coming soon on Google Play" badge next to its App Store button. When it launches on Play, set `playStoreUrl` by hand and the badge becomes a real link.
 
 Try it locally with `node scripts/check-stores.mjs --dry-run`, or run the workflow by hand from **Actions → Store watch → Run workflow** (it has a `dry_run` option).
 
 **One-time setup:** in Settings → Actions → General, enable **"Allow GitHub Actions to create and approve pull requests"**.
+
+### Registering an app from its repo
+The template ships `register-website.yml`, a reusable workflow, plus a stub that triggers it. It runs in the app's repo and:
+
+1. reads the app's name, slug, bundle ID and package from `app.json`, its tagline and primary color from `IDEA.md`, and its icon;
+2. clones this repo and runs `scripts/register-app.mjs`, then `scripts/validate-apps.mjs`;
+3. opens or updates a PR from the `register/<slug>` branch.
+
+A new app arrives as `coming-soon`. For an app that's already listed, only its identity fields (name, tagline, color, icon, IDs) are refreshed; its status, store links and page copy are never touched.
 
 ### Editing an app by hand
 Edit its entry in `assets/apps.json`, then run `node scripts/validate-apps.mjs`. Fields:
@@ -84,8 +95,9 @@ Edit its entry in `assets/apps.json`, then run `node scripts/validate-apps.mjs`.
   "icon": "assets/app-icons/mealcart.png",
   "platforms": ["ios", "android"],
   "bundleId": "com.focalstudio.mealcart",       // App Store lookup key
-  "androidPackage": "com.focalstudio.mealcart", // Google Play lookup key
-  "appStoreUrl": null, "playStoreUrl": null,    // filled in by the store watcher
+  "androidPackage": "com.focalstudio.mealcart", // informational (Play is not watched)
+  "appStoreUrl": null,                          // filled in by the store watcher
+  "playStoreUrl": null,                         // set by hand when it launches on Play
   "betaUrl": null,                    // TestFlight / Play testing link
   "privacyUrl": "privacy-mealcart.html",
   "releasedAt": null,

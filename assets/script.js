@@ -96,6 +96,10 @@
     if (play) {
       html += '<a class="btn btn-store" href="' + esc(play) + '" target="_blank" rel="noopener noreferrer" aria-label="Get ' + esc(app.name) + ' on Google Play">' +
         PLAY_SVG + '<span><small>Get it on</small>Google Play</span></a>';
+    } else if (app.status === 'released' && (app.platforms || []).indexOf('android') !== -1) {
+      /* Placeholder until playStoreUrl is set by hand: same badge, no link */
+      html += '<span class="btn btn-store btn-store--soon" role="img" aria-label="' + esc(app.name) + ' is coming soon to Google Play">' +
+        PLAY_SVG + '<span><small>Coming soon on</small>Google Play</span></span>';
     }
     return html;
   }

@@ -18,7 +18,8 @@ Every app surface on the site renders from `assets/apps.json`: the hero orbit, t
 ## Schema (see README → "Editing an app by hand" for the full example)
 - **Required:** `slug` (kebab-case), `name`, `tagline`, `status`, `icon`, `platforms` (`ios`, `android`).
 - **`status`:** `in-development` (set `betaUrl` to show "In beta"), `coming-soon`, or `released`. A released app needs `appStoreUrl` or `playStoreUrl`.
-- **Store keys:** `bundleId` and `androidPackage` are what `store-watch.yml` looks up. Leave `appStoreUrl` and `playStoreUrl` as `null`; the watcher fills them and flips the status.
+- **Store keys:** `bundleId` is what `store-watch.yml` looks up on the App Store. Leave `appStoreUrl` as `null`; the watcher fills it and flips the status. Google Play is not watched: set `playStoreUrl` by hand when an app launches there. Until then, released Android apps show an unlinked "Coming soon on Google Play" badge.
+- **New apps** normally arrive through the template's `register-website.yml`, which runs `scripts/register-app.mjs`. Prefer that over hand-adding an entry.
 - **App page:** the optional `detail` object holds `problem` and `solution` (arrays of paragraphs), `features` (`{icon, title, text}`), `screenshots` (`{src, alt}`, with alt text required), and `tech` (key/value map).
 - **Featured:** `featured: true` gives the wide home card with peeking screenshots. Use it for one app at a time.
 - **Studio identity:** the top-level `studio` block holds the developer IDs the store watcher trusts. Only change it if the developer account changes.

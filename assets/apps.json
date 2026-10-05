@@ -2,10 +2,6 @@
   "studio": {
     "appStoreDeveloperIds": [
       1896557823
-    ],
-    "playDeveloperNames": [
-      "Focal Studio",
-      "Felipe Perez Martinez"
     ]
   },
   "apps": [
@@ -167,8 +163,8 @@
         "ios",
         "android"
       ],
-      "bundleId": "com.vestia.app",
-      "androidPackage": "com.vestia.app",
+      "bundleId": "com.focalstudio.vestia",
+      "androidPackage": "com.focalstudio.vestia",
       "appStoreUrl": null,
       "playStoreUrl": null,
       "betaUrl": null,

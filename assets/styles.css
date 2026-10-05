@@ -300,6 +300,16 @@ a:hover { color: var(--accent); }
 }
 .btn-store:hover { color: var(--bg); background: #fff; }
 .btn-store small { display: block; font-size: 0.68rem; font-weight: 500; opacity: 0.7; }
+
+/* Unlinked placeholder (Google Play before launch): same badge, dimmed, inert */
+.btn-store--soon,
+.btn-store--soon:hover {
+  background: var(--text);
+  color: var(--bg);
+  opacity: 0.5;
+  transform: none;
+  cursor: default;
+}
 .btn-store svg { flex-shrink: 0; }
 
 /* ── 7. Hero ────────────────────────────────────────────────── */
