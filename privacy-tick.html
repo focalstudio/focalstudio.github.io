@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Tick</title>
+  <meta name="description" content="Privacy Policy for Tick. What data the app collects, why, and how to delete it." />
+  <meta name="theme-color" content="#0B0B0D" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0B0B0D;
+      --surface: #141417;
+      --surface-2: #1B1B20;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --text: #F2F2F3;
+      --muted: #9A9AA3;
+      --subtle: #6B6B74;
+      --accent: #5BD08A;
+      --accent-ink: #06150C;
+      --radius: 18px;
+      --gutter: clamp(16px, 4vw, 32px);
+      --font: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: var(--font);
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 75% -10%, rgba(91, 208, 138, 0.08), transparent 60%),
+        radial-gradient(900px 500px at -10% 30%, rgba(142, 155, 255, 0.05), transparent 60%),
+        var(--bg);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    a:hover { color: var(--text); }
+
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+    ::selection { background: var(--accent); color: var(--accent-ink); }
+
+    .skip-link {
+      position: absolute;
+      left: 1rem;
+      top: -3rem;
+      z-index: 200;
+      padding: 0.5rem 0.9rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .skip-link:focus { top: 0.75rem; color: var(--accent-ink); }
+
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 var(--gutter); }
+
+    /* Nav: the site's sticky glass bar, aperture mark linking home */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: saturate(140%) blur(14px);
+      -webkit-backdrop-filter: saturate(140%) blur(14px);
+      background: rgba(11, 11, 13, 0.72);
+      border-bottom: 1px solid var(--border);
+    }
+    .site-nav .wrap { display: flex; align-items: center; height: 64px; }
+
+    .nav-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--text);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    .nav-logo:hover { color: var(--text); }
+    .nav-logo:hover .logo-mark { transform: rotate(60deg); }
+    .logo-mark { width: 26px; height: 26px; color: var(--accent); transition: transform 0.8s var(--ease-out); }
+    .nav-logo-sub { color: var(--muted); font-weight: 400; }
+
+    /* Page header */
+    .page-head { padding: clamp(2.5rem, 7vw, 4.5rem) 0 2rem; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--accent); }
+
+    .page-head h1 {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: clamp(2rem, 6vw, 2.75rem);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+    .swatch {
+      flex: none;
+      width: 0.45em;
+      height: 0.45em;
+      border-radius: 50%;
+      background: #5B6CE8;
+      box-shadow: 0 0 0 1px var(--border-strong);
+    }
+    .page-head .meta { margin-top: 0.75rem; color: var(--muted); font-size: 0.95rem; }
+
+    /* Policy body */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(1.5rem, 5vw, 2.75rem);
+    }
+    .card > :first-child { margin-top: 0; }
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 2.5rem 0 0.75rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      scroll-margin-top: 88px;
+    }
+    h3 { font-size: 0.98rem; font-weight: 600; margin: 1.5rem 0 0.4rem; }
+
+    p { margin-bottom: 0.85rem; color: var(--text); }
+    ul, ol { margin: 0.5rem 0 1rem 1.4rem; }
+    li { margin-bottom: 0.4rem; }
+    li::marker { color: var(--subtle); }
+    strong { font-weight: 600; }
+
+    table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 1.25rem; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th {
+      background: var(--surface-2);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .callout {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--accent);
+      border-radius: 0 12px 12px 0;
+      padding: 1rem 1.15rem;
+      margin: 1.25rem 0;
+    }
+
+    .site-footer {
+      margin-top: 3rem;
+      padding: 1.5rem 0 3rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem; }
+    .site-footer a { color: var(--text); text-decoration: none; }
+    .site-footer a:hover { color: var(--accent); }
+
+    @media (max-width: 520px) {
+      table { display: block; overflow-x: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .logo-mark { transition: none; }
+      .nav-logo:hover .logo-mark { transform: none; }
+    }
+
+    @media print {
+      :root { color-scheme: light; --text: #111; --muted: #444; --subtle: #666; --accent: #111; --border: #ccc; --surface-2: #f2f2f2; }
+      body { background: #fff; }
+      .site-nav, .skip-link { display: none; }
+      .card { border: 0; padding: 0; background: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="site-nav" aria-label="Focal Studio">
+    <div class="wrap">
+      <a href="https://focalstudio.github.io" class="nav-logo" aria-label="Focal Studio — home">
+        <svg class="logo-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 7.4L21.94 13.14M15.98 9.7L15.98 21.17M15.98 14.3L6.05 20.04M12 16.6L2.06 10.86M8.02 14.3L8.02 2.83M8.02 9.7L17.95 3.96"/></svg>
+        <span>focal<span class="nav-logo-sub"> studio</span></span>
+      </a>
+    </div>
+  </nav>
+
+  <main id="main" class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">Privacy policy</p>
+      <h1><span class="swatch" aria-hidden="true"></span>Tick</h1>
+      <p class="meta">Last updated October 2026</p>
+    </header>
+
+    <article class="card">
+          <p>
+            Tick is built by Focal Studio. This policy explains what data the
+            app collects, why, and how you can remove it. If anything here is unclear, email
+            <a href="mailto:focalstudio.apps@gmail.com">focalstudio.apps@gmail.com</a>.
+          </p>
+
+          <h2>1. Information We Collect</h2>
+          <h3>Information you provide</h3>
+          <ul>
+            <li><strong>App content</strong> — the clock faces, themes, and timer settings you configure. This stays on your device.</li>
+          </ul>
+          <h3>Information collected automatically</h3>
+          <ul>
+            <li><strong>Anonymous usage analytics</strong> — which screens are opened and which features are used, so we can see what needs improving. This is not linked to your name or email, and you can turn it off entirely (see below).</li>
+          </ul>
+          <div class="callout">
+            <strong>We do not sell your data.</strong> We do not share it with advertisers,
+            data brokers, or any third party for marketing purposes.
+          </div>
+
+          <h2>2. Where Your Data Lives</h2>
+          <p>
+            Your app content is stored locally on your device. It is never transmitted to us or
+            to any third party, and it is cleared if you uninstall the app.
+          </p>
+          <p>
+            The one exception is the anonymous usage analytics described below, which is sent to the
+            third-party service listed in the next
+            section. It contains no app
+            content and nothing identifying you.
+          </p>
+
+          <h2>3. Third-Party Services</h2>
+          <table>
+            <thead>
+              <tr><th>Service</th><th>Purpose</th><th>Data shared</th></tr>
+            </thead>
+            <tbody>
+            <tr><td>PostHog</td><td>Anonymous product analytics</td><td>Anonymous usage events only</td></tr>
+            </tbody>
+          </table>
+
+          <h2>4. Turning Off Analytics</h2>
+          <p>
+            Analytics is optional. Open <strong>Settings → Privacy → Analytics</strong> in the
+            app and turn the <strong>Analytics</strong> toggle off. No further usage events are
+            sent from that point on, and your choice persists across app restarts and updates.
+          </p>
+
+          <h2>5. Permissions</h2>
+          <p>Tick requests only the permissions it needs:</p>
+          <ul>
+            <li><strong>Notifications</strong> — optional; used only for timers and reminders you set yourself. Denying this does not limit any other feature.</li>
+          </ul>
+
+          <h2 id="delete">6. How to Delete Your Account and Data</h2>
+          <p>You can delete your account and its data at any time, directly in the app:</p>
+          <ol>
+            <li>Open Settings.</li>
+            <li>Scroll to Danger Zone.</li>
+            <li>Tap Delete Account and confirm.</li>
+          </ol>
+          <p><strong>Deleted immediately and permanently:</strong></p>
+          <ul>
+            <li>Your local account and sign-in credentials</li>
+            <li>Your clock faces, themes, and timer settings</li>
+            <li>All app data stored on the device</li>
+          </ul>
+          <p><strong>Retained, and why:</strong></p>
+          <ul>
+            <li>Anonymous analytics events — they contain no information identifying you and therefore cannot be traced back to a deleted account</li>
+          </ul>
+          <div class="callout">
+            <strong>No longer have the app installed?</strong> Email
+            <a href="mailto:focalstudio.apps@gmail.com?subject=Data%20Deletion%20Request">focalstudio.apps@gmail.com</a> from the address on your account with
+            the subject "Data Deletion Request". We will confirm your identity and delete the
+            account within 30 days.
+          </div>
+
+          <h2>7. Your Rights</h2>
+          <p>
+            Depending on where you live (including under GDPR and CCPA), you may have the right
+            to access, correct, export, or delete your personal data, and to object to certain
+            processing. Deletion is available as described above; for any other request, email
+            <a href="mailto:focalstudio.apps@gmail.com">focalstudio.apps@gmail.com</a> and we will respond within 30 days.
+          </p>
+
+          <h2>8. Children&#39;s Privacy</h2>
+          <p>
+            Tick is not directed at children under 13, and we do not knowingly
+            collect data from them. If you believe a child has provided us data, email
+            <a href="mailto:focalstudio.apps@gmail.com">focalstudio.apps@gmail.com</a> and we will delete it.
+          </p>
+
+          <h2>9. Changes to This Policy</h2>
+          <p>
+            We may update this policy as the app changes. The "Last updated" date at the top
+            always reflects the current version. Material changes will be surfaced in the app.
+          </p>
+
+          <h2>10. Contact</h2>
+          <p>Questions about this policy or your data: <a href="mailto:focalstudio.apps@gmail.com">focalstudio.apps@gmail.com</a></p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>Tick · by <a href="https://focalstudio.github.io">Focal Studio</a></span>
+      <span>© 2026 Focal Studio</span>
+    </div>
+  </footer>
+</body>
+</html>
