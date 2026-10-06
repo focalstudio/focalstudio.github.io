@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /privacy-policy-template.html
+
+Sitemap: https://focalstudio.github.io/sitemap.xml
