@@ -8,7 +8,7 @@ All notable changes to this repository will be documented in this file.
 - The privacy and terms pages (`privacy-policy.html`, `privacy-mealcart.html`, `terms.html`) now use the dark optical-lab style instead of the old cream look (#20). They use the template's privacy shell: sticky nav with the aperture mark, an app heading, a surface card, and no web fonts or third-party requests. The text and every `id` (MealCart's `#delete` included) are unchanged. `privacy-policy-template.html` is synced with the template's restyled fallback.
 
 ### Added
-- StayLock app page copy: a description, problem/solution and six "What's coming" features. **Draft, pending review.**
+- StayLock app page copy: a description, problem/solution and five "What's coming" features, drafted from the tagline. It makes no privacy promises until StayLock has a privacy policy.
 - The catalog reads without JavaScript. `scripts/build-app-pages.mjs` prerenders the catalog cards, home stats and pipeline counts into `index.html` / `apps.html` with `catalogHtml()` / `statsHtml()` from `assets/script.js`. The browser keeps the static cards while their `data-prerendered` hash matches `apps.json`, so they don't fade in twice, and re-renders them when it doesn't. If `apps.json` fails to load, the static catalog stays instead of an error. `app-pages.yml` commits both pages with the rest.
 - JSON-LD: `Organization` + `WebSite` on the home page, and `MobileApplication` on every app page (store links once released).
 - `robots.txt` and a generated `sitemap.xml`. `scripts/build-app-pages.mjs` writes the sitemap from `apps.json` (app pages and on-site privacy policies), and `app-pages.yml` commits it with the pages. `robots.txt` keeps crawlers off `privacy-policy-template.html`.

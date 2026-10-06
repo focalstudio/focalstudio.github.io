@@ -205,7 +205,7 @@
         ],
         "solution": [
           "StayLock moves the decision to when you're calm. Set a schedule once — work hours, study time, the hour before bed — and the block starts and ends on its own.",
-          "It's built the Focal Studio way: your schedules and block lists stay on your device, with no account to create and nothing in the app trying to keep you in it."
+          "It's being designed the Focal Studio way: to keep your schedules and block lists on your device, with nothing in the app trying to keep you in it."
         ],
         "features": [
           {
@@ -231,12 +231,7 @@
           {
             "icon": "📊",
             "title": "Focus history",
-            "text": "See how many hours you protected each week, kept on your device."
-          },
-          {
-            "icon": "🔐",
-            "title": "Private by design",
-            "text": "No account and no tracking. Your schedules and lists stay on your phone."
+            "text": "See how many hours you protected each week."
           }
         ]
       }
