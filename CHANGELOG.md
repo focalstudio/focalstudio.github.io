@@ -4,6 +4,13 @@ All notable changes to this repository will be documented in this file.
 
 ## 2026-10-06
 
+### Changed
+- New headline: **"One thing at a time."** It means you focus on one task, each app does one job, and the studio builds one app at a time. The hero subtitle now says so, and drops "No accounts. No tracking.", which isn't true of every app.
+- The social preview image carries the new headline and an "Explore the apps →" call to action.
+
+### Fixed
+- `og:site_name` ("Focal Studio") added to every page with Open Graph tags (opengraph.xyz warning).
+
 ### Added
 - Social preview image (`assets/brand/og-image.png`, 1200×630) with `og:image` / `twitter:image` on every page. It's generated from `og-image.html` by `scripts/render-og.mjs`, which reads `apps.json` (#17).
 - App pages for MealCart, Vestia and Tick: a description and features sourced from each app's repo, plus MealCart's problem/solution (#18). Coming-soon pages now title their features "What's coming" and always keep the Notify-me panel.
