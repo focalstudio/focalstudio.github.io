@@ -78,27 +78,27 @@
         ],
         "screenshots": [
           {
-            "src": "assets/screenshots/Timer.png",
+            "src": "assets/screenshots/Timer.webp",
             "alt": "WildFocus focus timer — stay focused, save an animal"
           },
           {
-            "src": "assets/screenshots/Rescue.png",
+            "src": "assets/screenshots/Rescue.webp",
             "alt": "WildFocus rescue screen — longer focus earns rarer animals"
           },
           {
-            "src": "assets/screenshots/Collection.png",
+            "src": "assets/screenshots/Collection.webp",
             "alt": "WildFocus collection screen — grow your animal collection"
           },
           {
-            "src": "assets/screenshots/Fun_facts.png",
+            "src": "assets/screenshots/Fun_facts.webp",
             "alt": "WildFocus animal detail — learn fun facts about animals"
           },
           {
-            "src": "assets/screenshots/Progress.png",
+            "src": "assets/screenshots/Progress.webp",
             "alt": "WildFocus progress screen — track your focus, build discipline"
           },
           {
-            "src": "assets/screenshots/Achievements.png",
+            "src": "assets/screenshots/Achievements.webp",
             "alt": "WildFocus achievements — achievements that motivate"
           }
         ],
