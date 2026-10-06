@@ -1033,7 +1033,8 @@ a:hover { color: var(--accent); }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
   gap: 1px;
-  background: var(--border);
+  /* Lines come from each cell's shadow, so an incomplete last row has no odd filled cell */
+  background: var(--bg-raise);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
@@ -1042,6 +1043,7 @@ a:hover { color: var(--accent); }
 .feature {
   padding: 1.4rem;
   background: var(--bg-raise);
+  box-shadow: 1px 0 0 var(--border), 0 1px 0 var(--border), 1px 1px 0 var(--border);
   display: grid;
   gap: 0.4rem;
   align-content: start;
@@ -1079,6 +1081,36 @@ a:hover { color: var(--accent); }
 
 .detail-missing { padding: 6rem 0; text-align: center; }
 .detail-missing p { color: var(--muted); margin: 1rem 0 2rem; }
+
+/* ── 14b. 404 ───────────────────────────────────────────────── */
+.notfound { padding: clamp(4rem, 12vw, 8rem) 0 clamp(3rem, 8vw, 6rem); text-align: center; }
+.notfound-inner { display: grid; justify-items: center; gap: 1.1rem; }
+
+.notfound-lens {
+  width: clamp(110px, 18vw, 160px);
+  aspect-ratio: 1;
+  color: var(--accent);
+  filter: drop-shadow(0 0 24px var(--accent-glow));
+  margin-bottom: 0.75rem;
+  animation: lensSettle 2.6s var(--ease-out) 0.2s both;
+}
+
+/* Starts blurred and slightly open, then pulls into focus — the 404's one joke */
+@keyframes lensSettle {
+  0%   { filter: blur(10px); opacity: 0.35; transform: rotate(-40deg) scale(1.15); }
+  100% { filter: blur(0) drop-shadow(0 0 24px var(--accent-glow)); opacity: 1; transform: none; }
+}
+
+.notfound-title {
+  font-size: clamp(2.2rem, 5.5vw, 4rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  max-width: 16ch;
+}
+
+.notfound-text { color: var(--muted); max-width: 44ch; font-size: 1.05rem; }
+.notfound-actions { justify-content: center; margin-top: 0.75rem; }
 
 /* ── 15. Contact ────────────────────────────────────────────── */
 .contact-grid {

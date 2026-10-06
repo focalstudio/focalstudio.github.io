@@ -130,7 +130,53 @@
       "betaUrl": null,
       "privacyUrl": "privacy-mealcart.html",
       "releasedAt": null,
-      "featured": false
+      "featured": false,
+      "description": "Turn any recipe into a ready-to-shop list in seconds, grouped by aisle.",
+      "detail": {
+        "problem": [
+          "Writing grocery lists by hand means retyping every recipe, adding up quantities in your head, and still walking the supermarket three times for the thing you forgot."
+        ],
+        "solution": [
+          "MealCart turns any recipe into a structured shopping list automatically — paste a URL, scan a photo, or type it in. Plan a week of dinners on Sunday and MealCart merges everything into one list, deduplicates quantities, and groups items by aisle so you shop in one pass."
+        ],
+        "features": [
+          {
+            "icon": "🔗",
+            "title": "Recipe import",
+            "text": "Paste any recipe URL or scan a photo to pull in the ingredients instantly."
+          },
+          {
+            "icon": "🧾",
+            "title": "Smart shopping list",
+            "text": "Quantities merged and deduplicated across every recipe you plan."
+          },
+          {
+            "icon": "📅",
+            "title": "Weekly meal plan",
+            "text": "Drag recipes onto a weekly grid and shop for the whole week at once."
+          },
+          {
+            "icon": "🥫",
+            "title": "Pantry tracker",
+            "text": "Mark what you already own and keep it off the list automatically."
+          },
+          {
+            "icon": "🛒",
+            "title": "Aisle grouping",
+            "text": "Items sorted by store section, so you move through the supermarket once."
+          },
+          {
+            "icon": "⚖️",
+            "title": "Servings scaler",
+            "text": "Adjust portions and watch every quantity recalculate in real time."
+          },
+          {
+            "icon": "🥗",
+            "title": "Macro tracking",
+            "text": "Calories, protein, carbs and fat for every planned meal."
+          }
+        ]
+      }
     },
     {
       "slug": "staylock",
@@ -170,7 +216,47 @@
       "betaUrl": null,
       "privacyUrl": null,
       "releasedAt": null,
-      "featured": false
+      "featured": false,
+      "description": "Set your allocation targets, import your broker's statement each month, and let Vestia keep you to your own rules.",
+      "detail": {
+        "features": [
+          {
+            "icon": "🎯",
+            "title": "Allocation targets",
+            "text": "Define how your portfolio should be split, and see where it has drifted."
+          },
+          {
+            "icon": "📥",
+            "title": "Broker CSV import",
+            "text": "Upload your broker's export each month instead of typing trades by hand."
+          },
+          {
+            "icon": "🧭",
+            "title": "Discipline mode",
+            "text": "Scheduled reviews on your own cadence, with a suggested monthly contribution based on your profile."
+          },
+          {
+            "icon": "📈",
+            "title": "Holding charts",
+            "text": "Price history with your average-cost line, and each position's value over time."
+          },
+          {
+            "icon": "👀",
+            "title": "Watchlist",
+            "text": "Search tickers and follow them with compact trend charts."
+          },
+          {
+            "icon": "💱",
+            "title": "Multi-currency",
+            "text": "Buys, sells, dividends, fees and splits in any currency, converted with ECB reference rates."
+          },
+          {
+            "icon": "🌗",
+            "title": "Light & dark",
+            "text": "Follows your system appearance, or pick one."
+          }
+        ]
+      }
     },
     {
       "slug": "tick",
@@ -190,7 +276,37 @@
       "betaUrl": null,
       "privacyUrl": null,
       "releasedAt": null,
-      "featured": false
+      "featured": false,
+      "description": "Ultralight numerals, live seconds and a colour wash that follows the time of day, made to sit on your desk.",
+      "detail": {
+        "features": [
+          {
+            "icon": "🕰️",
+            "title": "A calm, big clock",
+            "text": "Ultralight numerals sized to be read from across the room, with live seconds in Tick's indigo."
+          },
+          {
+            "icon": "🔁",
+            "title": "12 or 24-hour",
+            "text": "Tap the clock to switch formats."
+          },
+          {
+            "icon": "📅",
+            "title": "Today's date",
+            "text": "The full date sits quietly beneath the time."
+          },
+          {
+            "icon": "🌅",
+            "title": "Time-of-day tint",
+            "text": "A gentle wash of colour that shifts with the phase of the day."
+          },
+          {
+            "icon": "🌗",
+            "title": "Dark mode",
+            "text": "Follows your system appearance, or set it yourself."
+          }
+        ]
+      }
     }
   ]
 }
