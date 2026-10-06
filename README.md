@@ -21,7 +21,7 @@ https://focalstudio.github.io.
 - `assets/script.js`: the renderers (orbit, catalog, detail page, stats, beta bar).
 - `assets/app-icons/`: app icons. Square, about 384px.
 - `assets/brand/aperture.svg`: the aperture mark and favicon.
-- `assets/brand/og-image.png`: the 1200×630 social preview every page points `og:image` at. Its source, `og-image.html`, reads `apps.json`. After the catalog changes, regenerate it with `node scripts/render-og.mjs` (needs only Node and Chrome).
+- `assets/brand/og-image.png`: the 1200×630 social preview every page points `og:image` at. Its source, `og-image.html`, reads `apps.json`. After the catalog changes, regenerate it with `node scripts/render-og.mjs` (needs only Node and Chrome). Then bump the `?v=` on every `og:image` and `twitter:image` URL. Preview services cache images by URL, so without a new URL they keep showing the old picture.
 - `scripts/validate-apps.mjs`: checks `apps.json`.
 - `scripts/check-stores.mjs`: the store watcher.
 - `scripts/register-app.mjs`: adds or refreshes one app. The template's `register-website.yml` calls it.

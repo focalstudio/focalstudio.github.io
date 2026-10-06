@@ -9,6 +9,7 @@ All notable changes to this repository will be documented in this file.
 - The social preview image carries the new headline and an "Explore the apps →" call to action.
 
 ### Fixed
+- `og:image` / `twitter:image` URLs carry `?v=20261006`, so preview services re-fetch the new image instead of serving their cached copy.
 - `og:site_name` ("Focal Studio") added to every page with Open Graph tags (opengraph.xyz warning).
 
 ### Added

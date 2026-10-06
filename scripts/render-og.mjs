@@ -65,6 +65,7 @@ try {
   const shot = await send('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width: 1200, height: 630, scale: 1 } });
   await writeFile(OUT, Buffer.from(shot.result.data, 'base64'));
   console.log(`✓ wrote ${OUT}`);
+  console.log('  Now bump the ?v= on og:image / twitter:image in the HTML pages — preview services cache by URL.');
   ws.close();
 } finally {
   chrome.kill();
