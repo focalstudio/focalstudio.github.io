@@ -5,15 +5,16 @@ description: Add, update, announce or release an app on the Focal Studio website
 
 # Editing the Focal Studio app catalog
 
-Every app surface on the site renders from `assets/apps.json`: the hero orbit, the catalog cards, `app.html?app=<slug>`, the stats, and the beta bar. **Never hand-write app markup in the HTML pages.**
+Every app surface on the site renders from `assets/apps.json`: the hero orbit, the catalog cards, the app pages (`apps/<slug>.html`, generated, and `app.html?app=<slug>`), the stats, and the beta bar. **Never hand-write app markup in the HTML pages.**
 
 ## Steps
 1. Work on a `feat/*` or `docs/*` branch, never `main`.
 2. Edit the app's entry in `assets/apps.json`. Keep 2-space JSON formatting, because bots write this file too.
 3. Icons go in `assets/app-icons/<slug>.png`, square. Resize big sources with `sips -Z 384 <file>`.
 4. Run `node scripts/validate-apps.mjs`. It must pass.
-5. Preview with `python3 -m http.server 8000`, then open `/` and `/app.html?app=<slug>`.
-6. Open a PR to `main`.
+5. Run `node scripts/build-app-pages.mjs` and commit the changed `apps/*.html` with the catalog change. Never edit those files by hand.
+6. Preview with `python3 -m http.server 8000`, then open `/` and `/apps/<slug>.html`.
+7. Open a PR to `main`.
 
 ## Schema (see README → "Editing an app by hand" for the full example)
 - **Required:** `slug` (kebab-case), `name`, `tagline`, `status`, `icon`, `platforms` (`ios`, `android`).

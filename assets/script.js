@@ -8,7 +8,9 @@
   /* Absolute: 404.html is served at arbitrary nested paths */
   var APPS_URL = '/assets/apps.json';
   var CONTACT_EMAIL = 'focalstudio.apps@gmail.com';
-  var REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SITE_URL = 'https://focalstudio.github.io/';
+  /* Guarded: scripts/build-app-pages.mjs loads this file in Node */
+  var REDUCED_MOTION = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var STATUS = {
     'released':       { label: 'Out now',        order: 0 },
@@ -68,8 +70,15 @@
     return '<span class="pill pill--' + esc(app.status) + '">' + esc(statusLabel(app)) + '</span>';
   }
 
+  /* The static page scripts/build-app-pages.mjs generates for each app */
   function detailHref(app) {
-    return 'app.html?app=' + encodeURIComponent(app.slug);
+    return 'apps/' + encodeURIComponent(app.slug) + '.html';
+  }
+
+  /* Prefix relative URLs with root, so the same markup works one folder down */
+  function local(url, root) {
+    var u = safeUrl(url);
+    return u && root && !/^([a-z][a-z0-9+.-]*:|\/|#)/i.test(u) ? root + u : u;
   }
 
   function sortApps(apps) {
@@ -103,6 +112,12 @@
         PLAY_SVG + '<span><small>Coming soon on</small>Google Play</span></span>';
     }
     return html;
+  }
+
+  /* In Node, hand the app page template to scripts/build-app-pages.mjs and stop */
+  if (typeof module === 'object' && module.exports) {
+    module.exports = { detailHtml: detailHtml, detailMeta: detailMeta, detailHref: detailHref, esc: esc, local: local, SITE_URL: SITE_URL };
+    return;
   }
 
   /* ── Mobile navigation ────────────────────────────────────── */
@@ -889,24 +904,46 @@
       return;
     }
 
-    document.title = app.name + ' — Focal Studio';
+    var meta = detailMeta(app);
+    document.title = meta.title;
     var metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute('content', app.name + ': ' + (app.tagline || '') + ' A Focal Studio app.');
+    if (metaDesc) metaDesc.setAttribute('content', meta.description);
 
+    /* The static page is the one to index */
+    var canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = SITE_URL + detailHref(app);
+
+    host.innerHTML = detailHtml(app, '');
+  }
+
+  function detailMeta(app) {
+    return {
+      title: app.name + ' — Focal Studio',
+      description: app.name + ': ' + (app.tagline || '') + ' A Focal Studio app.'
+    };
+  }
+
+  /* The app page body. root is '' on app.html and '../' on the static apps/<slug>.html */
+  function detailHtml(app, root) {
     var detail = app.detail || {};
     var released = app.status === 'released';
     var actions = storeButtons(app);
     var beta = safeUrl(app.betaUrl);
     if (beta) actions += '<a class="btn btn-primary" href="' + esc(beta) + '" target="_blank" rel="noopener noreferrer">Join the beta ↗</a>';
-    var privacy = safeUrl(app.privacyUrl);
+    var privacy = local(app.privacyUrl, root);
     if (privacy) actions += '<a class="btn btn-ghost" href="' + esc(privacy) + '">Privacy policy</a>';
 
     var html =
       '<section class="detail-hero" style="' + colorStyle(app) + '">' +
         '<div class="container">' +
-          '<a class="detail-back" href="apps.html">← The catalog</a>' +
+          '<a class="detail-back" href="' + root + 'apps.html">← The catalog</a>' +
           '<div class="detail-head">' +
-            '<img class="detail-icon" src="' + esc(safeUrl(app.icon)) + '" alt="' + esc(app.name) + ' app icon" width="128" height="128" />' +
+            '<img class="detail-icon" src="' + esc(local(app.icon, root)) + '" alt="' + esc(app.name) + ' app icon" width="128" height="128" />' +
             '<div>' +
               pill(app) +
               '<h1 class="detail-title">' + esc(app.name) + '</h1>' +
@@ -923,7 +960,7 @@
       html += '<section class="detail-section" aria-labelledby="shots-h"><h2 id="shots-h">Screenshots</h2>' +
         '<div class="shots" tabindex="0" aria-label="Screenshots, scroll horizontally">' +
         detail.screenshots.map(function (s) {
-          return '<figure class="shot"><img src="' + esc(safeUrl(s.src)) + '" alt="' + esc(s.alt || '') + '" loading="lazy" /></figure>';
+          return '<figure class="shot"><img src="' + esc(local(s.src, root)) + '" alt="' + esc(s.alt || '') + '" loading="lazy" /></figure>';
         }).join('') +
         '</div></section>';
     }
@@ -970,7 +1007,7 @@
     }
 
     html += '</div>';
-    host.innerHTML = html;
+    return html;
   }
 
   /* ── Beta testers bar ─────────────────────────────────────── */
