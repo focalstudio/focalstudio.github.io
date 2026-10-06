@@ -7,7 +7,7 @@ Repository guidance for coding agents working in `fpmartinez10.github.io`.
 - Stack: plain HTML, CSS, and JavaScript with no build step.
 - Prioritize small, reviewable changes that preserve the existing visual language (dark "optical lab" system; tokens at the top of `assets/styles.css`).
 - App content lives in `assets/apps.json` only. Never hard-code app cards or app pages; see README → "How apps get onto the site".
-- Legal pages (`privacy-*.html`, `terms.html`) are self-contained and styled from the template's `store-listing/privacy-shell.html`. A page is generated only when its app repo runs the template's `publish-privacy.yml`, which opens a PR here; change those pages in the app repo. **Today no app does**, so `privacy-policy.html`, `terms.html` (WildFocus) and `privacy-mealcart.html` are all maintained here by hand. Keep their text and every `id` unchanged unless the request is about their content.
+- Legal pages (`privacy-*.html`, `terms.html`) are self-contained and styled from the template's `store-listing/privacy-shell.html`. Some are mirrored from an app repo, which opens a PR here; change those in the app repo. `privacy-policy.html` and `terms.html` come from WildFocus's `docs/` through its `sync-legal-docs.yml`. `privacy-mealcart.html` has no publisher, so it is maintained here by hand. Template apps will publish through the template's `publish-privacy.yml`. Keep their text and every `id` unchanged unless the request is about their content.
 
 ## Workflow
 - Check `git status --short --branch` before editing.
