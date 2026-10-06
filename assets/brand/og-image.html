@@ -24,8 +24,11 @@
     .brand { display: flex; align-items: center; gap: 14px; font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
     .brand svg { width: 40px; height: 40px; color: var(--accent); }
     .brand span span { color: var(--muted); font-weight: 400; }
-    h1 { margin-top: 58px; font-size: 76px; line-height: 0.98; font-weight: 600; letter-spacing: -0.045em; }
+    h1 { margin-top: 44px; font-size: 84px; line-height: 0.98; font-weight: 600; letter-spacing: -0.045em; }
     .serif { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; color: var(--accent); letter-spacing: -0.01em; font-size: 1.08em; }
+    .cta { display: inline-flex; align-items: center; gap: 12px; margin-top: 40px; padding: 16px 30px;
+      border-radius: 999px; background: var(--accent); color: #06150C; font-size: 26px; font-weight: 600;
+      letter-spacing: -0.01em; box-shadow: 0 14px 40px -10px rgba(91, 208, 138, 0.55); }
     .meta { position: absolute; left: 84px; bottom: 74px; display: flex; gap: 14px; align-items: center;
       font-family: "Geist Mono", monospace; font-size: 17px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
     .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
@@ -47,7 +50,8 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7.4L21.94 13.14M15.98 9.7L15.98 21.17M15.98 14.3L6.05 20.04M12 16.6L2.06 10.86M8.02 14.3L8.02 2.83M8.02 9.7L17.95 3.96"/></svg>
       <span>focal<span> studio</span></span>
     </div>
-    <h1>Small apps that do <span class="serif">one thing</span> well.</h1>
+    <h1>One thing<br />at a <span class="serif">time</span>.</h1>
+    <div class="cta">Explore the apps <span aria-hidden="true">→</span></div>
   </div>
   <div class="meta"><span class="dot"></span><span id="count">Independent app studio</span><span>·</span><span>focalstudio.github.io</span></div>
 
