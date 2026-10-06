@@ -18,12 +18,6 @@
 
   var PLATFORM_LABEL = { ios: 'iPhone', android: 'Android' };
 
-  var APERTURE_SVG =
-    '<svg class="aperture" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-      '<circle cx="12" cy="12" r="10"/>' +
-      '<path d="M12 7.4L21.94 13.14M15.98 9.7L15.98 21.17M15.98 14.3L6.05 20.04M12 16.6L2.06 10.86M8.02 14.3L8.02 2.83M8.02 9.7L17.95 3.96"/>' +
-    '</svg>';
-
   var APPLE_SVG =
     '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>';
 
@@ -267,215 +261,614 @@
     });
   }
 
-  /* ── The orbit ────────────────────────────────────────────── */
+  /* ── The lens ─────────────────────────────────────────────── */
+  /* The aperture mark is a lens. Its focus ring is a dial with one marking
+     per app: turn it and the apps come round on a drum behind a 9-blade
+     diaphragm, and the lens racks focus onto each one, hunting a little
+     before it locks. */
 
-  var orbitUid = 0;
+  var LENS_R = 40;                                  // iris circle, in the 100×100 viewBox
+  var IRIS_CLOSED = 0.08, IRIS_OPEN = 0.84;         // aperture radius as a fraction of LENS_R
+  var DRUM_STEP = 48;                               // degrees between apps on the drum
+  var lensUid = 0;
 
-  function chunk(list, size) {
-    var out = [];
-    for (var i = 0; i < list.length; i += size) out.push(list.slice(i, i + size));
-    return out;
+  /* The spotlight: featured, then shipped, then the latest release, then
+     the newest added. Rank by downloads or ratings here once apps.json has them. */
+  function spotlightRank(a, b) {
+    if (!!b.app.featured !== !!a.app.featured) return b.app.featured ? 1 : -1;
+    var ra = a.app.status === 'released', rb = b.app.status === 'released';
+    if (ra !== rb) return rb ? 1 : -1;
+    return String(b.app.releasedAt || '').localeCompare(String(a.app.releasedAt || '')) || b.i - a.i;
   }
 
-  function renderOrbit(host, apps) {
-    var compact = host.hasAttribute('data-orbit-compact');
-    var live = sortApps(apps.filter(function (a) { return a.status !== 'coming-soon'; }));
-    var soon = sortApps(apps.filter(function (a) { return a.status === 'coming-soon'; }));
+  /* Spotlight first, then newest added first (apps.json is append-only) */
+  function lensOrder(apps) {
+    var list = apps.map(function (app, i) { return { app: app, i: i }; });
+    var spot = list.slice().sort(spotlightRank)[0];
+    var rest = list.filter(function (x) { return x !== spot; }).sort(function (a, b) { return b.i - a.i; });
+    return (spot ? [spot] : []).concat(rest).map(function (x) { return x.app; });
+  }
 
-    /* Inner rings: shipped + beta. Outer rings: coming soon. Max 6 per ring. */
-    var rings = [];
-    chunk(live, 6).forEach(function (group) { rings.push({ apps: group, soon: false }); });
-    chunk(soon, 6).forEach(function (group) { rings.push({ apps: group, soon: true }); });
-    if (!rings.length) { host.hidden = true; return; }
+  /* A 9-blade diaphragm, like a real lens: the opening is a 9-gon whose
+     edges bow outward (curved blades), so it reads almost round wide open
+     and stops down to a small polygon. */
+  var BLADES = 9;
+  var BLADE_BOW = 0.7;                              // 0 = straight blades, 1 = a circle
 
-    var uid = ++orbitUid;
-    var n = rings.length;
-    rings.forEach(function (ring, k) {
-      ring.fr = n === 1 ? 0.38 : 0.26 + (0.21 * k) / (n - 1);    // radius as a fraction of width
-      ring.tilt = 0.46;                                          // ry / rx
-      ring.phi = (-16 + k * 7) * Math.PI / 180;                  // plane rotation
-      ring.dir = ring.soon ? -1 : 1;
-      ring.omega = (2 * Math.PI) / (ring.soon ? 92 : 64);        // rad / second
-      ring.phase = k * 0.7;
-    });
-
-    var items = [];
-    var listHtml = '';
-    rings.forEach(function (ring, k) {
-      ring.apps.forEach(function (app, j) {
-        var tag = compact ? 'span' : 'a';
-        var attrs = compact
-          ? ''
-          : ' href="' + detailHref(app) + '" aria-label="' + esc(app.name + ' — ' + statusLabel(app)) + '"';
-        listHtml +=
-          '<li class="orbit-item' + (ring.soon ? ' is-soon' : '') + '" style="' + colorStyle(app) + '" data-ring="' + k + '" data-slot="' + j + '">' +
-            '<' + tag + ' class="orbit-link"' + attrs + '>' +
-              '<img class="orbit-icon" src="' + esc(safeUrl(app.icon)) + '" alt="" width="76" height="76" />' +
-              (compact ? '' : '<span class="orbit-label" aria-hidden="true">' + esc(app.name) + pill(app) + '</span>') +
-            '</' + tag + '>' +
-          '</li>';
-      });
-    });
-
-    host.classList.add('orbit');
-    if (compact) host.setAttribute('aria-hidden', 'true');
-    host.style.isolation = 'isolate';
-    host.innerHTML =
-      '<svg class="orbit-rings orbit-rings--back" aria-hidden="true"></svg>' +
-      '<ul class="orbit-list" aria-label="Focal Studio apps">' + listHtml + '</ul>' +
-      '<div class="orbit-core" aria-hidden="true">' + APERTURE_SVG + '</div>' +
-      '<svg class="orbit-rings orbit-rings--front" aria-hidden="true"></svg>';
-
-    var backSvg = host.querySelector('.orbit-rings--back');
-    var frontSvg = host.querySelector('.orbit-rings--front');
-
-    host.querySelectorAll('.orbit-item').forEach(function (li) {
-      var ring = rings[+li.getAttribute('data-ring')];
-      items.push({ el: li, ring: ring, slot: +li.getAttribute('data-slot'), active: false });
-    });
-
-    var W = 0, H = 0;
-
-    function drawRings() {
-      var cx = W / 2, cy = H / 2;
-      var defs = '', back = '', front = '';
-      rings.forEach(function (ring, k) {
-        var rx = W * ring.fr, ry = rx * ring.tilt, deg = ring.phi * 180 / Math.PI;
-        var id = 'o' + uid + 'r' + k;
-        var tint = ring.soon ? '142,155,255' : '91,208,138';
-        defs +=
-          '<linearGradient id="' + id + 'g" gradientUnits="userSpaceOnUse" x1="' + (cx - rx) + '" y1="0" x2="' + (cx + rx) + '" y2="0">' +
-            '<stop offset="0" stop-color="rgb(' + tint + ')" stop-opacity="0.05"/>' +
-            '<stop offset="0.5" stop-color="rgb(' + tint + ')" stop-opacity="0.55"/>' +
-            '<stop offset="1" stop-color="rgb(' + tint + ')" stop-opacity="0.05"/>' +
-          '</linearGradient>' +
-          '<clipPath id="' + id + 'b" clipPathUnits="userSpaceOnUse"><rect x="' + (cx - rx - 4) + '" y="' + (cy - ry - 4) + '" width="' + (2 * rx + 8) + '" height="' + (ry + 4) + '"/></clipPath>' +
-          '<clipPath id="' + id + 'f" clipPathUnits="userSpaceOnUse"><rect x="' + (cx - rx - 4) + '" y="' + cy + '" width="' + (2 * rx + 8) + '" height="' + (ry + 4) + '"/></clipPath>';
-        var ellipse = function (clip, opacity) {
-          return '<g transform="rotate(' + deg + ' ' + cx + ' ' + cy + ')">' +
-            '<ellipse class="orbit-ring' + (ring.soon ? ' orbit-ring--soon' : '') + '" cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '"' +
-            ' stroke="url(#' + id + 'g)" stroke-opacity="' + opacity + '" clip-path="url(#' + id + clip + ')"/></g>';
-        };
-        back += ellipse('b', 0.55);
-        front += ellipse('f', 1);
-      });
-      var vb = '0 0 ' + W + ' ' + H;
-      backSvg.setAttribute('viewBox', vb);
-      frontSvg.setAttribute('viewBox', vb);
-      backSvg.innerHTML = '<defs>' + defs + '</defs>' + back;
-      frontSvg.innerHTML = '<defs>' + defs.replace(/id="o/g, 'id="f-o') + '</defs>' + front.replace(/url\(#o/g, 'url(#f-o');
+  function aperturePoints(r, rot) {
+    var pts = [];
+    for (var k = 0; k < BLADES; k++) {
+      var a = (-90 + 360 / BLADES * k + rot) * Math.PI / 180;
+      pts.push([50 + r * Math.cos(a), 50 + r * Math.sin(a)]);
     }
+    return pts;
+  }
 
-    /* Intro: icons burst out from behind the core */
-    var introOn = document.documentElement.classList.contains('intro') && !REDUCED_MOTION;
-    var introStart = performance.now() + 900;
-    var INTRO_MS = 900;
+  /* Control point that bows the edge v1→v2 outward */
+  function bowControl(v1, v2, r) {
+    var mx = (v1[0] + v2[0]) / 2, my = (v1[1] + v2[1]) / 2;
+    var dx = mx - 50, dy = my - 50, apothem = Math.hypot(dx, dy) || 1;
+    var target = apothem + BLADE_BOW * (r - apothem);
+    return [50 + dx / apothem * (2 * target - apothem), 50 + dy / apothem * (2 * target - apothem)];
+  }
 
-    function easeOutBack(t) {
-      var c1 = 1.4, c3 = c1 + 1;
-      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
-    }
-
-    var t = 0;          // orbit clock (seconds)
-    var speed = 1;      // eases to 0 while hovering/focusing
-    var paused = false; // hover/focus
-
-    function place(now) {
-      var p = 1;
-      if (introOn) {
-        p = Math.min(1, Math.max(0, (now - introStart) / INTRO_MS));
-        if (p >= 1) introOn = false;
+  /* Each blade runs along an aperture edge, past the next vertex, to the rim */
+  function irisShape(frac, id) {
+    var r = LENS_R * frac;
+    var rot = (1 - frac / IRIS_OPEN) * (180 / BLADES);   // blades twist as they open
+    var v = aperturePoints(r, rot);
+    var rim = v.map(function (p, k) {
+      var n = v[(k + 1) % BLADES];
+      var ux = n[0] - p[0], uy = n[1] - p[1], len = Math.hypot(ux, uy) || 1;
+      ux /= len; uy /= len;
+      var dx = p[0] - 50, dy = p[1] - 50, b = dx * ux + dy * uy;
+      var t = -b + Math.sqrt(Math.max(0, b * b - (dx * dx + dy * dy - LENS_R * LENS_R)));
+      return [p[0] + ux * t, p[1] + uy * t];
+    });
+    var f = function (p) { return p[0].toFixed(2) + ' ' + p[1].toFixed(2); };
+    var defs = '', blades = '', seams = '', edges = '', clip = [];
+    for (var k = 0; k < BLADES; k++) {
+      var v1 = v[(k + 1) % BLADES], v2 = v[(k + 2) % BLADES], p1 = rim[k], p2 = rim[(k + 1) % BLADES];
+      var c = bowControl(v1, v2, r);
+      var g = id + 'b' + k;
+      /* Matte black blade: a little light catches the inner edge and the rim */
+      defs += '<linearGradient id="' + g + '" gradientUnits="userSpaceOnUse"' +
+        ' x1="' + ((v1[0] + v2[0]) / 2).toFixed(2) + '" y1="' + ((v1[1] + v2[1]) / 2).toFixed(2) + '"' +
+        ' x2="' + ((p1[0] + p2[0]) / 2).toFixed(2) + '" y2="' + ((p1[1] + p2[1]) / 2).toFixed(2) + '">' +
+        '<stop offset="0" stop-color="#2B2B31"/><stop offset="0.3" stop-color="#151519"/>' +
+        '<stop offset="0.85" stop-color="#0C0C0F"/><stop offset="1" stop-color="#1D1D22"/></linearGradient>';
+      blades += '<path fill="url(#' + g + ')" d="M' + f(v1) + 'L' + f(p1) + 'A' + LENS_R + ' ' + LENS_R + ' 0 0 1 ' + f(p2) +
+        'L' + f(v2) + 'Q' + f(c) + ' ' + f(v1) + 'Z"/>';
+      seams += 'M' + f(v[k]) + 'L' + f(rim[k]);
+      edges += 'M' + f(v1) + 'Q' + f(c) + ' ' + f(v2);
+      for (var s2 = 0; s2 < 4; s2++) {
+        var t2 = s2 / 4, u = 1 - t2;
+        clip.push([u * u * v1[0] + 2 * u * t2 * c[0] + t2 * t2 * v2[0], u * u * v1[1] + 2 * u * t2 * c[1] + t2 * t2 * v2[1]]);
       }
-      var radius = introOn ? easeOutBack(p) : 1;
-      var fade = introOn ? Math.min(1, p * 1.6) : 1;
+    }
+    return {
+      defs: defs,
+      blades: blades,
+      seams: seams,
+      edges: edges,
+      clip: 'polygon(' + clip.map(function (p) { return p[0].toFixed(2) + '% ' + p[1].toFixed(2) + '%'; }).join(',') + ')'
+    };
+  }
 
-      items.forEach(function (item) {
-        var ring = item.ring;
-        var total = ring.apps.length;
-        var theta = ring.phase + (item.slot / total) * Math.PI * 2 + ring.dir * ring.omega * t;
-        var rx = W * ring.fr * radius, ry = rx * ring.tilt;
-        var lx = Math.cos(theta) * rx, ly = Math.sin(theta) * ry;
-        var x = lx * Math.cos(ring.phi) - ly * Math.sin(ring.phi);
-        var y = lx * Math.sin(ring.phi) + ly * Math.cos(ring.phi);
-        var depth = (Math.sin(theta) + 1) / 2;                    // 0 = far, 1 = near
-        var scale = 0.6 + 0.4 * depth;
-        var opacity = (0.35 + 0.65 * depth) * (ring.soon ? 0.85 : 1) * fade;
-        var z = depth >= 0.5 ? 4 : 1;
-        if (item.active) { scale = Math.max(scale, 1); opacity = 1; z = 6; }
-        item.el.style.transform = 'translate(-50%, -50%) translate3d(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px,0) scale(' + scale.toFixed(3) + ')';
-        item.el.style.opacity = opacity.toFixed(3);
-        item.el.style.zIndex = z;
+  function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function smooth(a, b, v) { var t = clamp01((v - a) / (b - a)); return t * t * (3 - 2 * t); }
+  function easeOut(p) { return 1 - Math.pow(1 - p, 3); }
+  function easeOutBack(p) { var c = 1.25; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); }
+
+  function easeInOut(p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; }
+  function wrapDelta(d, n) { d = ((d % n) + n) % n; return d > n / 2 ? d - n : d; }
+  function mod(a, n) { return ((a % n) + n) % n; }
+  function pad2(v) { return (v < 10 ? '0' : '') + v; }
+
+  /* Focus-ring markings, one per app, clockwise from the top */
+  function ringMarks(n) {
+    var beta = 360 / n, every = Math.ceil(n / 24);
+    var minor = beta >= 24 ? 4 : beta >= 12 ? 1 : 0;
+    var p = function (a, r) {
+      var t = a * Math.PI / 180;
+      return (50 + r * Math.sin(t)).toFixed(2) + ' ' + (50 - r * Math.cos(t)).toFixed(2);
+    };
+    var major = '', small = '', labels = '';
+    for (var i = 0; i < n; i++) {
+      var a = i * beta;
+      major += 'M' + p(a, 45.4) + 'L' + p(a, 47);
+      for (var m = 1; m <= minor; m++) small += 'M' + p(a + beta * m / (minor + 1), 46.2) + 'L' + p(a + beta * m / (minor + 1), 47);
+      if (i % every === 0) {
+        labels += '<text class="lens-mark" data-mark="' + i + '" transform="rotate(' + a.toFixed(2) + ' 50 50)" x="50" y="7.75" text-anchor="middle">' + pad2(i + 1) + '</text>';
+      }
+    }
+    return '<path class="lens-ticks" d="' + major + '"/><path class="lens-ticks lens-ticks--minor" d="' + small + '"/>' + labels;
+  }
+
+  function renderLens(host, apps) {
+    var compact = host.hasAttribute('data-lens-compact');
+    var order = lensOrder(apps);
+    if (!order.length) { host.hidden = true; return; }
+
+    var uid = 'l' + (++lensUid);
+    var N = order.length;
+    var beta = 360 / N;
+    var dialable = !compact && N > 1;
+
+    host.classList.add('lens');
+    if (compact) host.setAttribute('aria-hidden', 'true');
+
+    var itemsHtml = order.map(function (app, i) {
+      var tag = compact ? 'span' : 'a';
+      var attrs = compact ? '' :
+        ' href="' + detailHref(app) + '" draggable="false" tabindex="' + (i ? -1 : 0) + '"' +
+        ' aria-label="' + esc(app.name + ' — ' + statusLabel(app) + ', ' + (i + 1) + ' of ' + N) + '"';
+      return '<li class="lens-item' + (app.status === 'coming-soon' ? ' is-soon' : '') + '" style="' + colorStyle(app) + '">' +
+        '<' + tag + ' class="lens-link"' + attrs + '>' +
+          '<img class="lens-icon" src="' + esc(safeUrl(app.icon)) + '" alt="" width="256" height="256" draggable="false" />' +
+          '<span class="lens-status lens-status--' + esc(app.status) + '"></span>' +
+        '</' + tag + '>' +
+      '</li>';
+    }).join('');
+
+    var bokehHtml = '';
+    for (var b = 0; b < 7; b++) bokehHtml += '<i></i>';
+
+    host.innerHTML =
+      '<div class="lens-stage">' +
+        '<div class="lens-frame"' + (compact ? '' : ' role="group" aria-roledescription="carousel" aria-label="Focal Studio apps"') + '>' +
+          '<div class="lens-halo" aria-hidden="true"></div>' +
+          '<svg class="lens-barrel" viewBox="0 0 100 100" aria-hidden="true">' +
+            '<defs>' +
+              '<radialGradient id="' + uid + 'body" cx="50%" cy="35%" r="65%">' +
+                '<stop offset="0" stop-color="#1C1C21"/><stop offset="1" stop-color="#0A0A0C"/></radialGradient>' +
+              '<linearGradient id="' + uid + 'light" x1="0" y1="0" x2="1" y2="1">' +
+                '<stop offset="0" stop-color="#fff" stop-opacity="0.32"/><stop offset="0.45" stop-color="#fff" stop-opacity="0"/>' +
+                '<stop offset="0.8" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="0.12"/></linearGradient>' +
+            '</defs>' +
+            '<circle class="lens-body" cx="50" cy="50" r="49.8" fill="url(#' + uid + 'body)"/>' +
+            '<circle class="lens-band" cx="50" cy="50" r="44.4"/>' +
+            '<g class="lens-ring">' +
+              '<circle class="lens-knurl" cx="50" cy="50" r="48.5"/>' +
+              ringMarks(N) +
+            '</g>' +
+            '<circle class="lens-knurl-light" cx="50" cy="50" r="48.5" stroke="url(#' + uid + 'light)"/>' +
+            '<path class="lens-index" d="M48.6 0.6L51.4 0.6L50 2.6Z"/>' +
+          '</svg>' +
+          '<div class="lens-bevel" aria-hidden="true"></div>' +
+          '<div class="lens-window">' +
+            '<div class="lens-bokeh" aria-hidden="true">' + bokehHtml + '</div>' +
+            '<div class="lens-floor" aria-hidden="true"></div>' +
+            '<ul class="lens-list">' + itemsHtml + '</ul>' +
+          '</div>' +
+          '<svg class="lens-iris" viewBox="0 0 100 100" aria-hidden="true">' +
+            '<defs><filter id="' + uid + 'shadow" x="-20%" y="-20%" width="140%" height="140%">' +
+              '<feDropShadow dx="0" dy="0.5" stdDeviation="1.2" flood-color="#000" flood-opacity="0.85"/></filter></defs>' +
+            '<defs class="lens-blade-defs"></defs>' +
+            '<g class="lens-blades" filter="url(#' + uid + 'shadow)"></g>' +
+            '<path class="lens-seams"/>' +
+            '<path class="lens-edges"/>' +
+            '<circle class="lens-rim" cx="50" cy="50" r="' + LENS_R + '"/>' +
+          '</svg>' +
+          '<div class="lens-glass" aria-hidden="true"><div class="lens-bloom"></div><div class="lens-sheen"></div></div>' +
+          (dialable ? '<svg class="lens-dial" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44.6"/></svg>' : '') +
+        '</div>' +
+      '</div>' +
+      (compact ? '' :
+        '<div class="lens-readout">' +
+          (dialable ? '<button type="button" class="lens-step" data-step="-1" aria-label="Previous app">‹</button>' : '') +
+          '<div class="lens-readout-body" aria-hidden="true"></div>' +
+          (dialable ? '<button type="button" class="lens-step" data-step="1" aria-label="Next app">›</button>' : '') +
+        '</div>' +
+        '<p class="sr-only" aria-live="polite" data-lens-live></p>') +
+      (dialable && N > 2 ?
+        '<p class="lens-hint"><span class="lens-hint-drag">Turn the ring to dial</span><span class="lens-hint-swipe">Swipe to dial</span> · ' + N + ' apps' +
+        '<a href="apps.html">See them all <span class="btn-arrow" aria-hidden="true">→</span></a></p>' : '');
+
+    var frame = host.querySelector('.lens-frame');
+    var win = host.querySelector('.lens-window');
+    var bladeDefs = host.querySelector('.lens-blade-defs');
+    var blades = host.querySelector('.lens-blades');
+    var seams = host.querySelector('.lens-seams');
+    var edges = host.querySelector('.lens-edges');
+    var ring = host.querySelector('.lens-ring');
+    var dial = host.querySelector('.lens-dial');
+    var body = host.querySelector('.lens-readout-body');
+    var live = host.querySelector('[data-lens-live]');
+    var marks = [].map.call(host.querySelectorAll('.lens-mark'), function (el) {
+      return { el: el, index: +el.getAttribute('data-mark'), angle: +el.getAttribute('data-mark') * beta, flip: false };
+    });
+    var bokeh = [].slice.call(host.querySelectorAll('.lens-bokeh i'));
+    var items = [].map.call(host.querySelectorAll('.lens-item'), function (el, i) {
+      return { el: el, link: el.firstChild, app: order[i], index: i, shown: true };
+    });
+
+    /* Bokeh: soft out-of-focus lights in the colours of the apps nearby */
+    var BOKEH = [[8, 22, 26], [30, 78, 18], [62, 14, 22], [86, 40, 30], [74, 82, 20], [16, 60, 16], [48, 92, 24]];
+
+    function setIris(frac) {
+      var s = irisShape(frac, uid);
+      bladeDefs.innerHTML = s.defs;
+      blades.innerHTML = s.blades;
+      seams.setAttribute('d', s.seams);
+      edges.setAttribute('d', s.edges);
+      win.style.clipPath = s.clip;
+      win.style.webkitClipPath = s.clip;
+    }
+
+    /* ── State ──
+       theta: the dial, in apps (unbounded; app = theta mod N)
+       focus: where the lens is focused, same units; it lags behind and hunts */
+    var W = 0;
+    var theta = 0, thetaVel = 0, thetaTarget = 0, dialMode = 'rest';   // 'rest' | 'spring' | 'drag' | 'intro'
+    var focus = 0, focusVel = 0, locked = true, interacted = false;
+    var front = 0, shownIndex = -1;
+    var tilt = { x: 0, y: 0 }, tiltTo = { x: 0, y: 0 };
+    var iris = null;                                 // { from, to, t0, ms, done }
+    var drag = null, suppressClick = false;
+
+    var intro = !compact && document.documentElement.classList.contains('intro') && !REDUCED_MOTION;
+    var introT0 = 0, introTilt = { x: 0, y: 0 }, introFrom = Math.min(3, N - 1), reveal = intro ? 0 : 1, bloomed = false;
+
+    /* ── Drawing ── */
+    function draw() {
+      var rd = W * 0.34;                              // drum radius, px
+      var defocusFront = Math.abs(focus - theta);
+      var breath = 1 + 0.045 * Math.min(1, defocusFront);   // focus breathing
+
+      items.forEach(function (it) {
+        var rel = wrapDelta(it.index - theta, N);
+        var a = Math.abs(rel);
+        var show = a < 2.2 && reveal > 0;
+        if (show !== it.shown) { it.el.style.visibility = show ? '' : 'hidden'; it.shown = show; }
+        if (!show) return;
+        var defocus = Math.abs(wrapDelta(it.index - focus, N));
+        var blur = Math.min(18, defocus * 9 + (1 - reveal) * 14);
+        var fringe = a < 0.6 && blur > 0.8 ? blur * 0.35 : 0;   // colour fringing when out of focus
+        it.el.style.transform =
+          'translate(-50%, -50%) translateZ(' + (-rd).toFixed(1) + 'px) rotateY(' + (rel * DRUM_STEP).toFixed(2) + 'deg)' +
+          ' translateZ(' + rd.toFixed(1) + 'px) scale(' + (breath * (0.7 + 0.3 * reveal)).toFixed(4) + ')';
+        it.el.style.opacity = ((1 - smooth(1.1, 1.9, a)) * reveal).toFixed(3);
+        it.el.style.zIndex = 100 - Math.round(a * 20);
+        it.el.style.filter =
+          (blur > 0.05 ? 'blur(' + blur.toFixed(2) + 'px) ' : '') +
+          'brightness(' + (1 - 0.5 * Math.min(1, a)).toFixed(3) + ')' +
+          (fringe ? ' drop-shadow(' + fringe.toFixed(1) + 'px 0 0 rgba(255,70,120,.35)) drop-shadow(' + (-fringe).toFixed(1) + 'px 0 0 rgba(70,200,255,.35))' : '');
       });
+
+      /* The ring and its knurl turn with the dial; the index mark stays put.
+         Markings passing the bottom flip so they never read upside down. */
+      ring.setAttribute('transform', 'rotate(' + (-theta * beta).toFixed(3) + ' 50 50)');
+      marks.forEach(function (m) {
+        var at = mod(m.angle - theta * beta, 360), flip = at > 95 && at < 265;
+        if (flip !== m.flip) {
+          m.flip = flip;
+          m.el.setAttribute('transform', 'rotate(' + m.angle.toFixed(2) + ' 50 50)' + (flip ? ' rotate(180 50 6.95)' : ''));
+        }
+      });
+
+      bokeh.forEach(function (el, j) {
+        var c = BOKEH[j];
+        var x = mod(c[0] - theta * 22 * (0.6 + j * 0.08), 120) - 10;
+        el.style.left = x.toFixed(2) + '%';
+        el.style.top = c[1] + '%';
+        el.style.width = c[2] + '%';
+      });
+
+      win.style.setProperty('--defocus', Math.min(1, defocusFront).toFixed(3));
+
+      var idx = mod(Math.round(dialMode === 'spring' || dialMode === 'rest' ? thetaTarget : theta), N);
+      if (idx !== front || shownIndex < 0) setFront(idx);
     }
 
-    var rafId = 0, last = 0, visible = true;
-
-    function frame(now) {
-      var dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
-      last = now;
-      speed += ((paused ? 0 : 1) - speed) * Math.min(1, dt * 5);
-      t += dt * speed;
-      place(now);
-      rafId = window.requestAnimationFrame(frame);
+    function setFront(idx) {
+      var moved = shownIndex >= 0 && idx !== front;
+      front = idx; shownIndex = idx;
+      marks.forEach(function (m) { m.el.classList.toggle('is-active', m.index === idx); });
+      items.forEach(function (it) {
+        if (!compact) it.link.setAttribute('tabindex', it.index === idx ? '0' : '-1');
+      });
+      var app = order[idx];
+      win.style.setProperty('--front-color', safeColor(app.color) || 'var(--accent)');
+      bokeh.forEach(function (el, j) {
+        el.style.setProperty('--c', safeColor(order[mod(idx + j - 3, N)].color) || 'var(--accent)');
+      });
+      if (moved) {
+        frame.classList.remove('is-tick'); void frame.offsetWidth; frame.classList.add('is-tick');
+        if (drag && drag.touch && navigator.vibrate) { try { navigator.vibrate(4); } catch (e) {} }
+      }
+      if (body) {
+        body.innerHTML =
+          '<span class="lens-readout-meta"><span class="lens-readout-count"><span class="lens-confirm" title="Focus confirmed"></span>' + pad2(idx + 1) + ' / ' + pad2(N) + '</span>' + pill(app) + '</span>' +
+          '<span class="lens-readout-name">' + esc(app.name) + '</span>' +
+          '<span class="lens-readout-tagline">' + esc(sentence(app.tagline)) + '</span>' +
+          '<a class="lens-readout-link" href="' + detailHref(app) + '" tabindex="-1">View app <span class="btn-arrow">→</span></a>';
+      }
     }
 
-    function start() {
-      if (REDUCED_MOTION || rafId || !visible || document.hidden) return;
-      last = 0;
-      rafId = window.requestAnimationFrame(frame);
+    function setLocked(on) {
+      if (on === locked) return;
+      locked = on;
+      host.classList.toggle('is-hunting', !on);
+      if (on) {
+        host.classList.remove('is-confirm'); void host.offsetWidth; host.classList.add('is-confirm');
+        if (live && interacted) {
+          var app = order[front];
+          live.textContent = app.name + ', ' + statusLabel(app) + '. ' + (front + 1) + ' of ' + N + '.';
+        }
+      }
     }
 
-    function stop() {
-      if (rafId) window.cancelAnimationFrame(rafId);
-      rafId = 0;
+    /* ── Motion: one rAF loop that runs only while something moves ── */
+    var rafId = 0, lastT = 0, lastFrameAt = 0;
+
+    function kick() {
+      /* A frame that never arrived (page frozen in the back/forward cache) must not wedge the loop */
+      if (rafId && performance.now() - lastFrameAt > 250) { window.cancelAnimationFrame(rafId); rafId = 0; }
+      if (!rafId) { lastT = 0; lastFrameAt = performance.now(); rafId = window.requestAnimationFrame(tick); }
+    }
+
+    function tick(now) {
+      lastFrameAt = performance.now();
+      var dt = lastT ? Math.min(0.05, (now - lastT) / 1000) : 1 / 60;
+      lastT = now;
+      var busy = false;
+      if (intro) busy = stepIntro(now) || busy;
+      busy = stepIris(now) || busy;
+      busy = stepDial(dt) || busy;
+      busy = stepFocus(dt) || busy;
+      busy = stepTilt(dt) || busy;
+      draw();
+      rafId = busy ? window.requestAnimationFrame(tick) : 0;
+    }
+
+    function stepDial(dt) {
+      if (dialMode === 'drag' || dialMode === 'intro') return true;
+      if (dialMode !== 'spring') return false;
+      if (REDUCED_MOTION) { theta = thetaTarget; thetaVel = 0; dialMode = 'rest'; return true; }
+      /* A detent: stiff and a touch underdamped, so it clicks into place */
+      thetaVel += (-170 * (theta - thetaTarget) - 19 * thetaVel) * dt;
+      theta += thetaVel * dt;
+      if (Math.abs(theta - thetaTarget) < 0.002 && Math.abs(thetaVel) < 0.02) {
+        theta = thetaTarget; thetaVel = 0; dialMode = 'rest';
+      }
+      return true;
+    }
+
+    function stepFocus(dt) {
+      var moving = dialMode !== 'rest';
+      var target = moving ? theta : thetaTarget;
+      if (REDUCED_MOTION) { focus = target; focusVel = 0; }
+      else {
+        /* While the ring turns, focus trails behind; once it stops, AF hunts and locks */
+        var k = moving ? 26 : 320, c = moving ? 10 : 16;
+        focusVel += (-k * (focus - target) - c * focusVel) * dt;
+        focus += focusVel * dt;
+      }
+      if (!moving && Math.abs(focus - target) < 0.01 && Math.abs(focusVel) < 0.08) {
+        focus = target; focusVel = 0;
+        if (reveal >= 1) setLocked(true);
+        return false;
+      }
+      if (Math.abs(focus - target) > 0.04) setLocked(false);
+      return true;
+    }
+
+    function stepTilt(dt) {
+      var k = 1 - Math.exp(-dt * 6);
+      tilt.x += (tiltTo.x - tilt.x) * k; tilt.y += (tiltTo.y - tilt.y) * k;
+      var tx = tilt.x + introTilt.x, ty = tilt.y + introTilt.y;
+      frame.style.transform = 'rotateX(' + tx.toFixed(2) + 'deg) rotateY(' + ty.toFixed(2) + 'deg)';
+      frame.style.setProperty('--tilt-x', tx.toFixed(2));
+      frame.style.setProperty('--tilt-y', ty.toFixed(2));
+      return Math.abs(tiltTo.x - tilt.x) + Math.abs(tiltTo.y - tilt.y) > 0.02;
+    }
+
+    function animateIris(from, to, ms, ease, done) {
+      if (REDUCED_MOTION) { setIris(to); if (done) done(); return; }
+      iris = { from: from, to: to, ms: ms, ease: ease, done: done, t0: 0 };
+      kick();
+    }
+
+    function stepIris(now) {
+      if (!iris) return false;
+      if (!iris.t0) iris.t0 = now;
+      var p = clamp01((now - iris.t0) / iris.ms);
+      setIris(iris.from + (iris.to - iris.from) * iris.ease(p));
+      if (p < 1) return true;
+      var done = iris.done; iris = null;
+      if (done) done();
+      return false;
+    }
+
+    /* ── Opening: the barrel settles, the iris opens, then the dial winds
+       back to the spotlight app and the lens hunts into focus ── */
+    function stepIntro(now) {
+      if (!introT0) introT0 = now;
+      var t = now - introT0;
+      setIris(t < 300 ? IRIS_CLOSED : IRIS_CLOSED + (IRIS_OPEN - IRIS_CLOSED) * easeOutBack(clamp01((t - 300) / 1100)));
+      var te = easeOut(clamp01(t / 1600));
+      introTilt = { x: 18 * (1 - te), y: -12 * (1 - te) };
+      if (t > 950 && !bloomed) { bloomed = true; frame.classList.add('is-bloom'); }
+      reveal = clamp01((t - 650) / 600);
+      if (t < 1100) { theta = introFrom; }
+      else if (t < 2100) { theta = introFrom * (1 - easeInOut((t - 1100) / 1000)); }
+      if (t >= 2100) {
+        intro = false; introTilt = { x: 0, y: 0 };
+        setIris(IRIS_OPEN); reveal = 1;
+        theta = thetaTarget = 0; dialMode = 'rest';
+        return false;
+      }
+      return true;
     }
 
     function measure() {
-      W = host.clientWidth;
-      H = host.clientHeight;
-      drawRings();
-      place(performance.now());
+      W = frame.clientWidth;
+      draw();
     }
 
-    measure();
-    host.classList.add('is-ready');
-
-    if ('ResizeObserver' in window) {
-      new ResizeObserver(function () { measure(); }).observe(host);
+    if (intro) {
+      setIris(IRIS_CLOSED);
+      theta = focus = introFrom; dialMode = 'intro';
+      introTilt = { x: 18, y: -12 };
+      locked = false;
     } else {
-      window.addEventListener('resize', measure);
+      setIris(IRIS_OPEN);
+    }
+    host.classList.toggle('is-hunting', !locked);
+    measure();
+    stepTilt(1);
+    host.classList.add('is-ready');
+    if (intro) kick();
+
+    if ('ResizeObserver' in window) new ResizeObserver(function () { measure(); }).observe(frame);
+    else window.addEventListener('resize', measure);
+
+    if (compact) return;
+
+    /* Back/forward cache: undo a pressed app and restart the loop */
+    window.addEventListener('pageshow', function (e) {
+      if (!e.persisted) return;
+      frame.classList.remove('is-engaged');
+      iris = null; drag = null; suppressClick = false;
+      host.classList.remove('is-dragging');
+      if (dialMode === 'drag' || dialMode === 'intro') { dialMode = 'spring'; thetaTarget = Math.round(theta); }
+      intro = false; introTilt = { x: 0, y: 0 }; reveal = 1;
+      setIris(IRIS_OPEN);
+      if (rafId) { window.cancelAnimationFrame(rafId); rafId = 0; }
+      kick();
+    });
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) kick(); });
+
+    if (!dialable) return;
+
+    /* ── Dialing ── */
+    function dialTo(index) {
+      interacted = true;
+      var base = dialMode === 'spring' ? thetaTarget : Math.round(theta);
+      thetaTarget = base + wrapDelta(index - mod(base, N), N);
+      dialMode = 'spring';
+      kick();
     }
 
-    if (REDUCED_MOTION) return;
+    function step(delta) { dialTo(mod((dialMode === 'spring' ? thetaTarget : Math.round(theta)) + delta, N)); }
 
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (entries) {
-        visible = entries[0].isIntersecting;
-        if (visible) start(); else stop();
-      }).observe(host);
+    function angleOf(e) {
+      var r = frame.getBoundingClientRect();
+      return Math.atan2(e.clientX - r.left - r.width / 2, -(e.clientY - r.top - r.height / 2)) * 180 / Math.PI;
     }
 
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden) stop(); else start();
+    function startDrag(e, kind) {
+      if (e.button !== 0 || intro) return;
+      drag = { id: e.pointerId, kind: kind, x: e.clientX, y: e.clientY, a: angleOf(e), theta: theta, moved: false, samples: [], touch: e.pointerType !== 'mouse' };
+      suppressClick = false;
+    }
+
+    win.addEventListener('pointerdown', function (e) { startDrag(e, 'linear'); });
+    dial.addEventListener('pointerdown', function (e) { startDrag(e, 'ring'); });
+
+    window.addEventListener('pointermove', function (e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (!drag.moved) {
+        if (Math.hypot(dx, dy) < 6) return;
+        drag.moved = true; interacted = true;
+        dialMode = 'drag'; thetaVel = 0;
+        host.classList.add('is-dragging');
+        try { (drag.kind === 'ring' ? dial : win).setPointerCapture(e.pointerId); } catch (err) {}
+      }
+      if (drag.kind === 'ring') {
+        var d = angleOf(e) - drag.a;
+        d = ((d + 540) % 360) - 180;
+        drag.a += d; drag.total = (drag.total || 0) + d;
+        theta = drag.theta - drag.total / beta;
+      } else {
+        theta = drag.theta - dx / (W * 0.3);
+      }
+      drag.samples.push({ t: e.timeStamp, v: theta });
+      while (drag.samples.length > 2 && e.timeStamp - drag.samples[0].t > 90) drag.samples.shift();
+      kick();
     });
 
-    if (!compact) {
-      var setActive = function (el, on) {
-        var li = el && el.closest('.orbit-item');
-        items.forEach(function (item) { if (item.el === li) item.active = on; });
-        paused = items.some(function (item) { return item.active; });
-        if (!rafId) place(performance.now());
-      };
-      host.addEventListener('pointerover', function (e) { if (e.target.closest('.orbit-link')) setActive(e.target, true); });
-      host.addEventListener('pointerout', function (e) {
-        var link = e.target.closest('.orbit-link');
-        if (link && !link.contains(e.relatedTarget)) setActive(link, false);
-      });
-      host.addEventListener('focusin', function (e) { setActive(e.target, true); });
-      host.addEventListener('focusout', function (e) { setActive(e.target, false); });
+    function endDrag(e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      var d = drag;
+      drag = null;
+      if (d.moved) {
+        suppressClick = true;
+        window.setTimeout(function () { suppressClick = false; }, 350);
+        var s = d.samples, a = s[0], z = s[s.length - 1], span = a && z ? (z.t - a.t) / 1000 : 0;
+        var v = span > 0.008 ? (z.v - a.v) / span : 0;
+        thetaTarget = Math.round(theta + Math.max(-2, Math.min(2, v * 0.08)));
+        thetaVel = REDUCED_MOTION ? 0 : v;
+        dialMode = 'spring';
+        host.classList.remove('is-dragging');
+      } else if (d.kind === 'ring' && e.type === 'pointerup') {
+        /* A tap on a ring marking dials straight to it */
+        dialTo(mod(Math.round(theta + wrapDelta(angleOf(e) / beta, N)), N));
+      }
+      kick();
     }
+    window.addEventListener('pointerup', endDrag);
+    window.addEventListener('pointercancel', endDrag);
 
-    start();
+    /* Clicks: a side app dials in; the front app opens, with a shutter press */
+    win.addEventListener('click', function (e) {
+      var link = e.target.closest('.lens-link');
+      if (!link) return;
+      if (suppressClick) { e.preventDefault(); suppressClick = false; return; }
+      var it = items.filter(function (x) { return x.link === link; })[0];
+      if (!it) return;
+      if (it.index !== front) { e.preventDefault(); dialTo(it.index); return; }
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || REDUCED_MOTION) return;
+      e.preventDefault();
+      frame.classList.add('is-engaged');
+      animateIris(IRIS_OPEN, 0.45, 240, easeOut, function () { window.location.href = link.href; });
+    });
+    win.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+    host.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-step]');
+      if (btn) step(+btn.getAttribute('data-step'));
+    });
+
+    /* Arrow keys turn the dial; focus follows the app in front */
+    host.addEventListener('keydown', function (e) {
+      var delta = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (e.key === 'Home') { e.preventDefault(); dialTo(0); }
+      else if (e.key === 'End') { e.preventDefault(); dialTo(N - 1); }
+      else if (delta) { e.preventDefault(); step(delta); }
+      else return;
+      if (win.contains(document.activeElement)) {
+        window.requestAnimationFrame(function () { items[front].link.focus({ preventScroll: true }); });
+      }
+    });
+
+    /* Horizontal trackpad scroll turns the dial one detent at a time;
+       a vertical wheel always scrolls the page */
+    var wheelX = 0, wheelTimer = 0;
+    frame.addEventListener('wheel', function (e) {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      e.preventDefault();
+      wheelX += e.deltaX;
+      window.clearTimeout(wheelTimer);
+      wheelTimer = window.setTimeout(function () { wheelX = 0; }, 180);
+      if (Math.abs(wheelX) > 50) { step(wheelX > 0 ? 1 : -1); wheelX = 0; }
+    }, { passive: false });
+
+    /* The barrel tilts toward the pointer while it's over the hero */
+    if (!REDUCED_MOTION) {
+      var zone = host.closest('.hero') || host;
+      zone.addEventListener('pointermove', function (e) {
+        if (e.pointerType !== 'mouse') return;
+        var r = frame.getBoundingClientRect();
+        var nx = Math.max(-1, Math.min(1, (e.clientX - r.left - r.width / 2) / (r.width / 2)));
+        var ny = Math.max(-1, Math.min(1, (e.clientY - r.top - r.height / 2) / (r.height / 2)));
+        tiltTo = { x: -ny * 6, y: nx * 6 };
+        kick();
+      });
+      zone.addEventListener('pointerleave', function () { tiltTo = { x: 0, y: 0 }; kick(); });
+    }
   }
 
   /* ── App detail page ──────────────────────────────────────── */
@@ -613,7 +1006,7 @@
   /* ── Boot ─────────────────────────────────────────────────── */
 
   function boot(apps) {
-    document.querySelectorAll('[data-app-orbit]').forEach(function (el) { renderOrbit(el, apps); });
+    document.querySelectorAll('[data-app-lens]').forEach(function (el) { renderLens(el, apps); });
     document.querySelectorAll('[data-catalog]').forEach(function (el) { renderCatalog(el, apps); });
     document.querySelectorAll('[data-stats]').forEach(function (el) { renderStats(el, apps); });
     document.querySelectorAll('[data-app-detail]').forEach(function (el) { renderDetail(el, apps); });
