@@ -2,6 +2,11 @@
 
 All notable changes to this repository will be documented in this file.
 
+## 2026-10-06
+
+### Fixed
+- `store-watch.yml` opens its PR with the Focal Studio Cross-Repo Bot token instead of `GITHUB_TOKEN`. The org blocks `GITHUB_TOKEN` from creating PRs, which greys out the repo setting, so the watcher could find a release but not report it. Bot PRs also trigger `validate.yml`.
+
 ## 2026-10-05
 
 ### Added
