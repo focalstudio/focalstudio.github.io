@@ -182,6 +182,7 @@
       "slug": "staylock",
       "name": "StayLock",
       "tagline": "Block distractions on a schedule.",
+      "description": "Pick the apps and sites that pull you away, set the hours you want to protect, and StayLock keeps them closed until the time is up.",
       "status": "coming-soon",
       "color": "#2F7BFF",
       "icon": "assets/app-icons/staylock.png",
@@ -196,7 +197,49 @@
       "betaUrl": null,
       "privacyUrl": null,
       "releasedAt": null,
-      "featured": false
+      "featured": false,
+      "detail": {
+        "problem": [
+          "Willpower runs out exactly when you need it. You pick up your phone to check one thing, and twenty minutes disappear into a feed.",
+          "Most blockers ask you to decide in the moment: turn it on, turn it off, snooze it one more time. That's the same decision you were already losing."
+        ],
+        "solution": [
+          "StayLock moves the decision to when you're calm. Set a schedule once — work hours, study time, the hour before bed — and the block starts and ends on its own.",
+          "It's built the Focal Studio way: your schedules and block lists stay on your device, with no account to create and nothing in the app trying to keep you in it."
+        ],
+        "features": [
+          {
+            "icon": "🗓️",
+            "title": "Scheduled blocks",
+            "text": "Recurring blocks for work, study or sleep that start and end on their own."
+          },
+          {
+            "icon": "📵",
+            "title": "Apps and sites",
+            "text": "Choose exactly which apps and websites each schedule keeps closed."
+          },
+          {
+            "icon": "🔒",
+            "title": "Strict mode",
+            "text": "Lock a block so it can't be switched off until it ends."
+          },
+          {
+            "icon": "⏸️",
+            "title": "Short breaks",
+            "text": "Take a limited break when you genuinely need one, without cancelling the whole block."
+          },
+          {
+            "icon": "📊",
+            "title": "Focus history",
+            "text": "See how many hours you protected each week, kept on your device."
+          },
+          {
+            "icon": "🔐",
+            "title": "Private by design",
+            "text": "No account and no tracking. Your schedules and lists stay on your phone."
+          }
+        ]
+      }
     },
     {
       "slug": "vestia",
