@@ -317,6 +317,7 @@ a:hover { color: var(--accent); }
 .hero {
   position: relative;
   padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(2rem, 5vw, 3rem);
+  overflow-x: clip;                  /* the lens halo bleeds past narrow screens */
 }
 
 .hero-grid {
@@ -402,35 +403,66 @@ a:hover { color: var(--accent); }
   color: var(--subtle);
 }
 
-/* ── 8. Orbit ───────────────────────────────────────────────── */
-.orbit {
+/* ── 8. Lens ────────────────────────────────────────────────── */
+/* Layers, back to front: barrel (focus ring with one marking per app),
+   bevel, the window (bokeh + a drum of apps), the 9-blade diaphragm,
+   front glass, and an invisible grip over the ring. JS tilts the
+   frame, turns the ring and drives the iris; depth comes from translateZ. */
+.lens {
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
+  display: grid;
+  justify-items: center;
+  gap: 0.9rem;
+}
+
+.lens-stage { width: 100%; perspective: 1100px; }
+
+.lens-frame {
   position: relative;
   width: 100%;
-  max-width: 680px;
-  aspect-ratio: 1 / 0.9;
-  margin: 0 auto;
+  aspect-ratio: 1;
+  transform-style: preserve-3d;
+  pointer-events: none;              /* its plane sits in front of the recessed window */
   user-select: none;
   -webkit-user-select: none;
 }
 
 /* Dust — a few points of light, pure gradients */
-.orbit::before {
+.lens-frame::before {
   content: "";
   position: absolute;
-  inset: -4%;
+  inset: -8%;
   pointer-events: none;
   background:
-    radial-gradient(1.5px 1.5px at 12% 22%, rgba(255,255,255,.55), transparent 60%),
-    radial-gradient(1px 1px at 82% 14%, rgba(255,255,255,.45), transparent 60%),
-    radial-gradient(1.5px 1.5px at 92% 64%, rgba(255,255,255,.35), transparent 60%),
-    radial-gradient(1px 1px at 22% 84%, rgba(255,255,255,.4), transparent 60%),
-    radial-gradient(1px 1px at 58% 6%, rgba(255,255,255,.3), transparent 60%),
-    radial-gradient(1.5px 1.5px at 6% 58%, rgba(255,255,255,.25), transparent 60%),
-    radial-gradient(1px 1px at 70% 92%, rgba(255,255,255,.35), transparent 60%),
-    radial-gradient(closest-side, rgba(91, 208, 138, 0.12), transparent 70%);
+    radial-gradient(1.5px 1.5px at 8% 18%, rgba(255,255,255,.55), transparent 60%),
+    radial-gradient(1px 1px at 88% 10%, rgba(255,255,255,.45), transparent 60%),
+    radial-gradient(1.5px 1.5px at 96% 66%, rgba(255,255,255,.35), transparent 60%),
+    radial-gradient(1px 1px at 14% 90%, rgba(255,255,255,.4), transparent 60%),
+    radial-gradient(1px 1px at 60% 2%, rgba(255,255,255,.3), transparent 60%),
+    radial-gradient(1.5px 1.5px at 2% 56%, rgba(255,255,255,.25), transparent 60%),
+    radial-gradient(1px 1px at 74% 98%, rgba(255,255,255,.35), transparent 60%);
 }
 
-.orbit-rings {
+.lens-halo {
+  position: absolute;
+  inset: -14%;
+  border-radius: 50%;
+  pointer-events: none;
+  translate: 0 0 -60px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, rgba(91,208,138,0.07) 38%, transparent 64%);
+  animation: haloBreathe 6s ease-in-out infinite;
+}
+
+@keyframes haloBreathe {
+  0%, 100% { opacity: 0.7; transform: scale(0.96); }
+  50%      { opacity: 1;   transform: scale(1.04); }
+}
+
+.lens-barrel,
+.lens-iris,
+.lens-dial {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -439,146 +471,380 @@ a:hover { color: var(--accent); }
   pointer-events: none;
 }
 
-.orbit-rings--back  { z-index: 1; }
-.orbit-rings--front { z-index: 3; }
+/* Deepest layer; scaled up to cancel the perspective shrink */
+.lens-barrel {
+  transform: translateZ(-30px) scale(1.027);
+  filter: drop-shadow(0 40px 60px rgba(0, 0, 0, 0.7));
+}
 
-.orbit-ring {
+.lens-body { stroke: rgba(255, 255, 255, 0.08); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.lens-band { fill: none; stroke: #111114; stroke-width: 6; }
+
+/* Knurled grip: fine ridges that turn with the ring; the light on them doesn't */
+.lens-knurl { fill: none; stroke: #2A2A31; stroke-width: 2.4; stroke-dasharray: 0.32 0.42; }
+.lens-knurl-light { fill: none; stroke-width: 2.4; }
+
+.lens-ticks {
   fill: none;
+  stroke: rgba(255, 255, 255, 0.5);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
 
-.orbit-ring--soon { stroke-dasharray: 2 7; stroke-linecap: round; }
+.lens-ticks--minor { stroke: rgba(255, 255, 255, 0.18); }
 
-.orbit-core {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 2;
-  width: 27%;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background:
-    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.10), transparent 45%),
-    radial-gradient(circle at 50% 50%, #17171B 0%, #0E0E11 70%);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    inset 0 -18px 40px rgba(0,0,0,0.5),
-    0 30px 80px -20px rgba(0,0,0,0.8);
+.lens-mark {
+  font-family: var(--mono);
+  font-size: 2.3px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  fill: rgba(255, 255, 255, 0.45);
+  transition: fill 0.2s;
 }
 
-.orbit-core::before,
-.orbit-core::after {
-  content: "";
+.lens-mark.is-active { fill: var(--accent); filter: drop-shadow(0 0 1px var(--accent-glow)); }
+
+/* The fixed index the markings turn against */
+.lens-index {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 1.5px var(--accent-glow));
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+}
+
+.lens-frame.is-tick .lens-index { animation: indexTick 0.22s var(--ease-out); }
+
+@keyframes indexTick {
+  0%   { transform: scale(1.6, 1.3); fill: #fff; }
+  100% { transform: none; }
+}
+
+/* Machined bevel between the ring and the blades */
+.lens-bevel {
   position: absolute;
+  inset: calc(50% - 41.4%);
   border-radius: 50%;
   pointer-events: none;
+  background: conic-gradient(from 200deg, #4A4A53, #121215 22%, #2C2C33 48%, #0D0D10 72%, #4A4A53);
+  -webkit-mask: radial-gradient(closest-side, transparent 96.2%, #000 96.6%);
+          mask: radial-gradient(closest-side, transparent 96.2%, #000 96.6%);
 }
 
-/* Halo */
-.orbit-core::before {
-  inset: -38%;
-  background: radial-gradient(circle, var(--accent-glow) 0%, rgba(91,208,138,0.08) 40%, transparent 68%);
-  z-index: -1;
-  animation: haloBreathe 6s ease-in-out infinite;
+/* The window: JS clips it to the iris hexagon */
+.lens-window {
+  position: absolute;
+  inset: 0;
+  perspective: 900px;
+  transform: translateZ(-16px) scale(1.015);
+  pointer-events: auto;
+  touch-action: pan-y;
+  cursor: grab;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(91, 208, 138, 0.10), rgba(11, 11, 13, 0.2) 42%, #050507 76%),
+    #08080A;
 }
 
-/* Lens ring */
-.orbit-core::after {
-  inset: 9%;
-  border: 1px solid rgba(91, 208, 138, 0.22);
-  box-shadow: 0 0 24px rgba(91, 208, 138, 0.15) inset;
+.lens.is-dragging .lens-window,
+.lens.is-dragging .lens-dial circle { cursor: grabbing; }
+
+/* Out-of-focus lights take the shape of the 9-blade aperture, like real bokeh */
+.lens-bokeh { position: absolute; inset: 0; }
+
+.lens-bokeh i {
+  position: absolute;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  clip-path: polygon(50.0% 0.0%, 82.1% 11.7%, 99.2% 41.3%, 93.3% 75.0%, 67.1% 97.0%, 32.9% 97.0%, 6.7% 75.0%, 0.8% 41.3%, 17.9% 11.7%);
+  background: radial-gradient(circle, var(--c, var(--accent)) 0 58%, color-mix(in srgb, var(--c, var(--accent)) 60%, #fff) 70%, transparent 74%);
+  opacity: calc(0.08 + var(--defocus, 0) * 0.2);
+  filter: blur(7px);
 }
 
-@keyframes haloBreathe {
-  0%, 100% { opacity: 0.7; transform: scale(0.96); }
-  50%      { opacity: 1;   transform: scale(1.04); }
+/* Light from the app in front, pooled on the glass below it */
+.lens-floor {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 34% 14% at 50% 76%, var(--front-color, var(--accent)), transparent 70%);
+  opacity: 0.28;
+  filter: blur(8px);
 }
 
-.orbit-core .aperture {
-  width: 58%;
-  height: 58%;
-  color: var(--accent);
-  filter: drop-shadow(0 0 10px var(--accent-glow));
-  animation: apertureSpin 48s linear infinite;
-}
+.lens-list { position: absolute; inset: 0; margin: 0; }
 
-@keyframes apertureSpin { to { transform: rotate(360deg); } }
-
-.orbit-list { position: absolute; inset: 0; }
-
-.orbit-item {
+.lens-item {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: clamp(48px, 12%, 80px);
+  width: 34%;
   aspect-ratio: 1;
   margin: 0;
-  will-change: transform, opacity;
+  backface-visibility: hidden;
+  will-change: transform, filter, opacity;
 }
 
-.orbit-link {
-  position: absolute;
-  inset: 0;
+.lens-link {
+  position: relative;
   display: block;
-  border-radius: 24%;
+  width: 100%;
+  height: 100%;
+  border-radius: 23%;
+  cursor: pointer;
   transition: transform 0.35s var(--ease-out);
+  -webkit-user-drag: none;
 }
 
-.orbit-icon {
+.lens-link:focus-visible { border-radius: 23%; outline-offset: 6px; }
+
+.lens-icon {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 24%;
+  border-radius: 23%;
   background: var(--surface-2);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.10),
-    0 10px 30px -8px rgba(0, 0, 0, 0.8),
-    0 0 34px -6px var(--app-color, var(--accent));
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 30px 50px -24px var(--app-color, var(--accent)),
+    0 18px 40px -14px rgba(0, 0, 0, 0.9),
+    0 0 60px -14px var(--app-color, var(--accent));
 }
 
-.orbit-item.is-soon .orbit-icon { filter: saturate(0.75); }
+.lens-item.is-soon .lens-icon { filter: saturate(0.85); }
 
-.orbit-label {
+/* Gloss: a top sheen and a crisp inner edge */
+.lens-link::after {
+  content: "";
   position: absolute;
-  left: 50%;
-  top: calc(100% + 10px);
-  transform: translate(-50%, -4px);
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  white-space: nowrap;
-  padding: 0.45rem 0.7rem;
-  border-radius: 10px;
-  background: rgba(20, 20, 23, 0.92);
-  border: 1px solid var(--border-strong);
-  backdrop-filter: blur(8px);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  opacity: 0;
+  inset: 0;
+  border-radius: 23%;
   pointer-events: none;
-  transition: opacity 0.2s, transform 0.3s var(--ease-out);
+  background: linear-gradient(165deg, rgba(255,255,255,0.28), rgba(255,255,255,0.05) 38%, transparent 52%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), inset 0 -10px 20px rgba(0, 0, 0, 0.22);
 }
 
-.orbit-link:hover,
-.orbit-link:focus-visible { transform: scale(1.14); }
+.lens-status {
+  position: absolute;
+  right: -2%;
+  top: -2%;
+  width: 11%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--status-soon);
+  box-shadow: 0 0 0 3px #0B0B0D, 0 0 12px var(--status-soon);
+  z-index: 1;
+}
 
-.orbit-link:hover .orbit-label,
-.orbit-link:focus-visible .orbit-label { opacity: 1; transform: translate(-50%, 0); }
+.lens-status--released       { background: var(--status-live); box-shadow: 0 0 0 3px #0B0B0D, 0 0 12px var(--status-live); }
+.lens-status--in-development { background: var(--status-beta); box-shadow: 0 0 0 3px #0B0B0D, 0 0 12px var(--status-beta); }
 
-/* Before JS positions the items, keep them stacked under the core */
-.orbit:not(.is-ready) .orbit-item { opacity: 0; }
+/* The front app presses in as the shutter closes on it */
+.lens-frame.is-engaged .lens-link { transform: scale(0.9); transition-duration: 0.2s; }
+
+/* Diaphragm: matte black blades, a glint on each blade edge, and a thin
+   anodised accent ring on the barrel like a pro lens's colour band */
+.lens-iris { transform: translateZ(10px); }
+
+.lens-blades path:nth-child(even) { opacity: 0.92; }
+
+.lens-seams {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.7);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+
+.lens-edges {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.16);
+  stroke-width: 1;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.lens-rim {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1;
+  stroke-opacity: 0.75;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Front glass: reflections that drift against the tilt */
+.lens-glass {
+  position: absolute;
+  inset: calc(50% - 40%);
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: none;
+  transform: translateZ(18px) translate(calc(var(--tilt-y, 0) * -0.9px), calc(var(--tilt-x, 0) * 0.9px));
+  background:
+    radial-gradient(ellipse 58% 34% at 30% 16%, rgba(255, 255, 255, 0.10), transparent 70%),
+    radial-gradient(ellipse 34% 16% at 74% 84%, rgba(142, 155, 255, 0.12), transparent 70%),
+    radial-gradient(ellipse 22% 10% at 84% 72%, rgba(91, 208, 138, 0.09), transparent 70%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 -30px 60px rgba(0, 0, 0, 0.25);
+}
+
+.lens-glass::before {
+  content: "";
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  border-top-color: rgba(255, 255, 255, 0.18);
+  transform: rotate(-38deg);
+  filter: blur(0.6px);
+}
+
+.lens-bloom,
+.lens-sheen { position: absolute; inset: 0; opacity: 0; }
+
+.lens-bloom {
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(220, 255, 235, 0.55), var(--accent-glow) 22%, transparent 60%);
+}
+
+.lens-sheen {
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.16) 48%, rgba(142, 155, 255, 0.10) 52%, transparent 62%);
+  transform: translateX(-110%);
+}
+
+.lens-frame.is-bloom .lens-bloom { animation: lensBloom 1.2s ease-out both; }
+.lens-frame.is-bloom .lens-sheen { animation: lensSheen 1.5s var(--ease-out) 0.15s both; }
+
+@keyframes lensBloom {
+  0%   { opacity: 0; transform: scale(0.3); }
+  22%  { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+@keyframes lensSheen {
+  0%   { opacity: 1; transform: translateX(-110%); }
+  100% { opacity: 1; transform: translateX(110%); }
+}
+
+/* Invisible grip over the focus ring: drag it round, or tap a marking */
+.lens-dial { transform: translateZ(24px); touch-action: pan-y; }
+
+.lens-dial circle {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 8.4;
+  pointer-events: stroke;
+  cursor: grab;
+}
+
+/* Readout under the lens: ‹ the app in front › */
+.lens-readout {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 480px;
+}
+
+.lens-readout-body {
+  grid-column: 2;
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  min-height: 6.6rem;
+  align-content: start;
+  text-align: center;
+  transition: opacity 0.25s;
+}
+
+.lens.is-hunting .lens-readout-body { opacity: 0.6; }
+.lens.is-hunting .lens-readout-name { filter: blur(1.2px); }
+
+.lens-readout-meta { display: inline-flex; align-items: center; gap: 0.6rem; }
+
+.lens-readout-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+/* Focus confirmation, as in a viewfinder: hollow while hunting, lit once locked */
+.lens-confirm {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.lens.is-hunting .lens-confirm { background: transparent; box-shadow: none; }
+.lens.is-confirm .lens-confirm { animation: confirmBlink 0.3s steps(2) 2; }
+
+@keyframes confirmBlink { 50% { background: transparent; } }
+
+.lens-readout-name {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  transition: filter 0.2s;
+}
+
+.lens-readout-tagline { color: var(--muted); font-size: 0.92rem; line-height: 1.45; }
+
+.lens-readout-link {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.lens-step {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 1.3rem;
+  line-height: 1;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.lens-step:first-child { grid-column: 1; }
+.lens-step:last-child  { grid-column: 3; }
+.lens-step:hover { color: var(--text); border-color: var(--border-strong); background: rgba(255, 255, 255, 0.04); }
+
+.lens-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+
+.lens-hint a { margin-left: 0.6rem; color: var(--muted); }
+.lens-hint-swipe { display: none; }
+
+@media (hover: none) {
+  .lens-hint-drag { display: none; }
+  .lens-hint-swipe { display: inline; }
+}
+
+/* Before JS fills the lens, keep it empty */
+.lens:not(.is-ready) .lens-item { opacity: 0; }
 
 /* Compact, decorative variant for the catalog header */
-.orbit--compact { max-width: 360px; pointer-events: none; }
-.orbit--compact .orbit-item { width: clamp(30px, 11%, 44px); }
-.orbit--compact .orbit-core { width: 24%; }
+.lens--compact,
+.lens--compact .lens-window { max-width: 340px; pointer-events: none; }
 
 /* ── 9. Status pills + platform chips ───────────────────────── */
 .pill {
@@ -1235,9 +1501,9 @@ html.intro .hero-title     { animation: focusPull 1.1s var(--ease-out) 0.3s both
 html.intro .hero-subtitle  { animation: fadeUp 0.9s var(--ease-out) 0.75s both; }
 html.intro .hero-actions   { animation: fadeUp 0.9s var(--ease-out) 0.85s both; }
 html.intro .stats          { animation: fadeUp 0.9s var(--ease-out) 1.2s both; }
-html.intro .orbit-core     { animation: coreIn 1s var(--ease-out) 0s both; }
-html.intro .orbit-core .aperture { animation: apertureClose 1.1s var(--ease-out) 0.05s both, apertureSpin 48s linear 1.15s infinite; }
-html.intro .orbit-rings    { animation: ringsIn 1.2s var(--ease-out) 0.5s both; }
+html.intro .lens-stage     { animation: lensIn 1.1s var(--ease-out) 0s both; }
+html.intro .lens-readout,
+html.intro .lens-hint      { animation: fadeUp 0.9s var(--ease-out) 1.8s both; }
 
 @keyframes focusPull {
   0%   { opacity: 0; filter: blur(16px); transform: scale(1.06); letter-spacing: -0.02em; }
@@ -1245,19 +1511,10 @@ html.intro .orbit-rings    { animation: ringsIn 1.2s var(--ease-out) 0.5s both; 
   100% { opacity: 1; filter: blur(0); transform: none; }
 }
 
-@keyframes apertureClose {
-  0%   { opacity: 0; transform: rotate(-120deg) scale(1.6); }
-  100% { opacity: 1; transform: rotate(0) scale(1); }
-}
-
-@keyframes coreIn {
-  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.7); filter: blur(10px); }
-  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0); }
-}
-
-@keyframes ringsIn {
-  0%   { opacity: 0; transform: scale(0.6); }
-  100% { opacity: 1; transform: scale(1); }
+/* script.js opens the iris and settles the tilt; this pulls the barrel into focus */
+@keyframes lensIn {
+  0%   { opacity: 0; transform: scale(0.92); filter: blur(12px); }
+  100% { opacity: 1; transform: none; filter: blur(0); }
 }
 
 @keyframes fadeUp {
@@ -1312,7 +1569,7 @@ html.js .reveal.is-visible { opacity: 1; transform: none; }
   .nav-links a { padding: 0.8rem 1rem; font-size: 1rem; }
   .nav-links a.nav-cta { margin: 0.5rem 0 0; text-align: center; }
 
-  .orbit { aspect-ratio: 1 / 0.8; }
+  .lens { max-width: 440px; }
   .hero-actions .btn { flex: 1 1 auto; }
   .detail-head { grid-template-columns: 1fr; }
 }
