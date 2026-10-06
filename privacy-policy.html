@@ -1,90 +1,253 @@
 <!DOCTYPE html>
+<!--
+  Source of truth: WildFocus docs/privacy-policy.html, mirrored here by WildFocus's
+  sync-legal-docs.yml. Edit it there, not in focalstudio.github.io.
+  Styled with the template's privacy shell
+  (focal-studio-app-template: store-listing/privacy-shell.html at 861c6fb). Nothing syncs the
+  two: when the shell changes, diff it from that commit and carry the change over by hand.
+  Self-contained: inline CSS, no web fonts, no scripts, no third-party requests.
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Privacy Policy – WildFocus</title>
+  <meta name="description" content="How WildFocus handles your data: what stays on your device, what is measured anonymously, and why." />
+  <meta name="theme-color" content="#0B0B0D" />
   <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0B0B0D;
+      --surface: #141417;
+      --surface-2: #1B1B20;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --text: #F2F2F3;
+      --muted: #9A9AA3;
+      --subtle: #6B6B74;
+      --accent: #5BD08A;
+      --accent-ink: #06150C;
+      --radius: 18px;
+      --gutter: clamp(16px, 4vw, 32px);
+      --font: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html { -webkit-text-size-adjust: 100%; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #f5f2ee;
-      color: #1a1a1a;
+      font-family: var(--font);
+      font-size: 1rem;
       line-height: 1.7;
-      padding: 2rem 1rem 4rem;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 75% -10%, rgba(91, 208, 138, 0.08), transparent 60%),
+        radial-gradient(900px 500px at -10% 30%, rgba(142, 155, 255, 0.05), transparent 60%),
+        var(--bg);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 2.5rem 2rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,.08);
-    }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    a:hover { color: var(--text); }
 
-    header {
-      border-bottom: 2px solid #2d7d46;
-      padding-bottom: 1.25rem;
-      margin-bottom: 2rem;
-    }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+    ::selection { background: var(--accent); color: var(--accent-ink); }
 
-    header h1 {
-      font-size: 1.75rem;
-      color: #2d7d46;
-      margin-bottom: .25rem;
+    .skip-link {
+      position: absolute;
+      left: 1rem;
+      top: -3rem;
+      z-index: 200;
+      padding: 0.5rem 0.9rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-weight: 600;
+      text-decoration: none;
     }
+    .skip-link:focus { top: 0.75rem; color: var(--accent-ink); }
 
-    header p { color: #666; font-size: .9rem; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 var(--gutter); }
+
+    /* Nav: the site's sticky glass bar, aperture mark linking home */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: saturate(140%) blur(14px);
+      -webkit-backdrop-filter: saturate(140%) blur(14px);
+      background: rgba(11, 11, 13, 0.72);
+      border-bottom: 1px solid var(--border);
+    }
+    .site-nav .wrap { display: flex; align-items: center; height: 64px; }
+
+    .nav-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--text);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    .nav-logo:hover { color: var(--text); }
+    .nav-logo:hover .logo-mark { transform: rotate(60deg); }
+    .logo-mark { width: 26px; height: 26px; color: var(--accent); transition: transform 0.8s var(--ease-out); }
+    .nav-logo-sub { color: var(--muted); font-weight: 400; }
+
+    /* Page header */
+    .page-head { padding: clamp(2.5rem, 7vw, 4.5rem) 0 2rem; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--accent); }
+
+    .page-head h1 {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: clamp(2rem, 6vw, 2.75rem);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+    .swatch {
+      flex: none;
+      width: 0.45em;
+      height: 0.45em;
+      border-radius: 50%;
+      background: #2d7d46;
+      box-shadow: 0 0 0 1px var(--border-strong);
+    }
+    .page-head .meta { margin-top: 0.75rem; color: var(--muted); font-size: 0.95rem; }
+
+    /* Policy body */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(1.5rem, 5vw, 2.75rem);
+    }
+    .card > :first-child { margin-top: 0; }
 
     h2 {
-      font-size: 1.1rem;
-      color: #1a1a1a;
-      margin: 2rem 0 .6rem;
-      padding-left: .75rem;
-      border-left: 3px solid #2d7d46;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 2.5rem 0 0.75rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      scroll-margin-top: 88px;
+    }
+    h3 { font-size: 0.98rem; font-weight: 600; margin: 1.5rem 0 0.4rem; }
+
+    p { margin-bottom: 0.85rem; color: var(--text); }
+    ul, ol { margin: 0.5rem 0 1rem 1.4rem; }
+    li { margin-bottom: 0.4rem; }
+    li::marker { color: var(--subtle); }
+    strong { font-weight: 600; }
+
+    table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 1.25rem; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th {
+      background: var(--surface-2);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
 
-    p { margin-bottom: .75rem; }
-
-    ul {
-      margin: .5rem 0 .75rem 1.5rem;
+    .callout {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--accent);
+      border-radius: 0 12px 12px 0;
+      padding: 1rem 1.15rem;
+      margin: 1.25rem 0;
     }
 
-    ul li { margin-bottom: .35rem; }
+    .site-footer {
+      margin-top: 3rem;
+      padding: 1.5rem 0 3rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem; }
+    .site-footer a { color: var(--text); text-decoration: none; }
+    .site-footer a:hover { color: var(--accent); }
 
-    a { color: #2d7d46; }
+    @media (max-width: 520px) {
+      table { display: block; overflow-x: auto; }
+    }
 
+    @media (prefers-reduced-motion: reduce) {
+      .logo-mark { transition: none; }
+      .nav-logo:hover .logo-mark { transform: none; }
+    }
+
+    @media print {
+      :root { color-scheme: light; --text: #111; --muted: #444; --subtle: #666; --accent: #111; --border: #ccc; --surface-2: #f2f2f2; }
+      body { background: #fff; }
+      .site-nav, .skip-link { display: none; }
+      .card { border: 0; padding: 0; background: none; }
+    }
+
+    /* Inline pill after a section heading (WildFocus: "Optional", "Anonymous only") */
     .badge {
       display: inline-block;
-      background: #2d7d46;
-      color: #fff;
-      font-size: .75rem;
-      font-weight: 600;
-      border-radius: 4px;
-      padding: .1rem .45rem;
+      margin-left: 0.5rem;
+      padding: 0.15rem 0.6rem;
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
       vertical-align: middle;
-      margin-left: .35rem;
-    }
-
-    footer {
-      margin-top: 3rem;
-      padding-top: 1.25rem;
-      border-top: 1px solid #e0e0e0;
-      font-size: .85rem;
-      color: #888;
-      text-align: center;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Privacy Policy</h1>
-      <p>WildFocus &nbsp;·&nbsp; Last updated: May 2026</p>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="site-nav" aria-label="Focal Studio">
+    <div class="wrap">
+      <a href="https://focalstudio.github.io" class="nav-logo" aria-label="Focal Studio — home">
+        <svg class="logo-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 7.4L21.94 13.14M15.98 9.7L15.98 21.17M15.98 14.3L6.05 20.04M12 16.6L2.06 10.86M8.02 14.3L8.02 2.83M8.02 9.7L17.95 3.96"/></svg>
+        <span>focal<span class="nav-logo-sub"> studio</span></span>
+      </a>
+    </div>
+  </nav>
+
+  <main id="main" class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">Privacy policy</p>
+      <h1><span class="swatch" aria-hidden="true"></span>WildFocus</h1>
+      <p class="meta">Last updated May 2026</p>
     </header>
 
+    <article class="card">
     <p>
       This Privacy Policy explains how <strong>WildFocus</strong> ("the app", "we", "our") handles
       information when you use our application on iOS or Android. We have designed WildFocus with
@@ -238,10 +401,14 @@
       If you have questions or concerns about this Privacy Policy, please contact us at:<br />
       <a href="mailto:focalstudio.apps@gmail.com">focalstudio.apps@gmail.com</a>
     </p>
+    </article>
+  </main>
 
-    <footer>
-      &copy; 2026 Focal Studio. All rights reserved.
-    </footer>
-  </div>
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>WildFocus · by <a href="https://focalstudio.github.io">Focal Studio</a></span>
+      <span>© 2026 Focal Studio. All rights reserved.</span>
+    </div>
+  </footer>
 </body>
 </html>

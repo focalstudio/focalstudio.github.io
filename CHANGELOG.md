@@ -4,6 +4,9 @@ All notable changes to this repository will be documented in this file.
 
 ## 2026-10-06
 
+### Fixed
+- The privacy and terms pages (`privacy-policy.html`, `privacy-mealcart.html`, `terms.html`) now use the dark optical-lab style instead of the old cream look (#20). They use the template's privacy shell: sticky nav with the aperture mark, an app heading, a surface card, and no web fonts or third-party requests. The text and every `id` (MealCart's `#delete` included) are unchanged. `privacy-policy-template.html` is synced with the template's restyled fallback.
+
 ### Added
 - `robots.txt` and a generated `sitemap.xml`. `scripts/build-app-pages.mjs` writes the sitemap from `apps.json` (app pages and on-site privacy policies), and `app-pages.yml` commits it with the pages. `robots.txt` keeps crawlers off `privacy-policy-template.html`.
 - `rel="canonical"` on the home, catalog and contact pages.

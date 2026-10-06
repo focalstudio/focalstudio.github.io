@@ -17,7 +17,7 @@ https://focalstudio.github.io.
 - `contact.html`: contact links.
 - `404.html`: branded "out of focus" page. GitHub Pages serves it at any unknown URL, so every path in it is absolute (`/assets/...`).
 - `robots.txt`: points crawlers at `sitemap.xml` and keeps them off `privacy-policy-template.html`.
-- `privacy-policy.html`, `privacy-<slug>.html`, `terms.html`: legal pages. These are self-contained and published by each app repo's `publish-privacy.yml`. **Do not restyle or hand-edit them.**
+- `privacy-policy.html`, `privacy-<slug>.html`, `terms.html`: legal pages. These are self-contained and use the template's dark privacy shell. `privacy-policy.html` and `terms.html` are mirrored from WildFocus's `docs/` by its `sync-legal-docs.yml` (as a PR), so edit them in WildFocus. `privacy-mealcart.html` has no publisher yet and is hand-maintained here. Template apps publish through the template's `publish-privacy.yml`.
 - `assets/apps.json`: the catalog data.
 - `assets/styles.css`: the design system (tokens at the top).
 - `assets/script.js`: the renderers (orbit, catalog, detail page, stats, beta bar).
