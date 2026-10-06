@@ -787,6 +787,8 @@
       var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
       if (!drag.moved) {
         if (Math.hypot(dx, dy) < 6) return;
+        /* On touch, a mostly vertical swipe across the window is the page scrolling */
+        if (drag.touch && drag.kind === 'linear' && Math.abs(dy) > Math.abs(dx)) { drag = null; return; }
         drag.moved = true; interacted = true;
         dialMode = 'drag'; thetaVel = 0;
         host.classList.add('is-dragging');
@@ -826,6 +828,16 @@
     }
     window.addEventListener('pointerup', endDrag);
     window.addEventListener('pointercancel', endDrag);
+
+    /* Phones: once a touch is dialing, keep the browser from claiming it as a
+       page scroll (which cancels the pointer and snaps the lens back) */
+    function holdTouch(e) {
+      if (!drag || !drag.touch || !e.cancelable || !e.touches.length) return;
+      var t = e.touches[0];
+      if (drag.kind === 'ring' || drag.moved || Math.abs(t.clientX - drag.x) > Math.abs(t.clientY - drag.y)) e.preventDefault();
+    }
+    win.addEventListener('touchmove', holdTouch, { passive: false });
+    dial.addEventListener('touchmove', holdTouch, { passive: false });
 
     /* Clicks: a side app dials in; the front app opens, with a shutter press */
     win.addEventListener('click', function (e) {
