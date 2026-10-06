@@ -70,7 +70,7 @@ Never downgrades anything: if a listing disappears, the entry is left for you to
 
 Try it locally with `node scripts/check-stores.mjs --dry-run`, or run the workflow by hand from **Actions → Store watch → Run workflow** (it has a `dry_run` option).
 
-**One-time setup:** in Settings → Actions → General, enable **"Allow GitHub Actions to create and approve pull requests"**.
+**Credentials:** the PR is opened by the **Focal Studio Cross-Repo Bot**, using the org secrets `FOCALSTUDIO_BOT_APP_ID` and `FOCALSTUDIO_BOT_PRIVATE_KEY`, not by `GITHUB_TOKEN`. The org blocks `GITHUB_TOKEN` from creating PRs, and bot PRs also trigger `validate.yml`. No repo setting is needed. A dry run works without the secrets.
 
 ### Registering an app from its repo
 The template ships `register-website.yml`, a reusable workflow, plus a stub that triggers it. It runs in the app's repo and:
