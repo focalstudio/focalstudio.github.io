@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- app-meta:start: scripts/build-app-pages.mjs writes each app's own tags here -->
   <title>App — Focal Studio</title>
   <meta name="description" content="A Focal Studio app — privacy-first, no tracking, built for iPhone and Android." />
   <meta name="theme-color" content="#0B0B0D" />
@@ -21,6 +22,7 @@
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Focal Studio — one thing at a time. An aperture lens focused on an app." />
   <meta property="twitter:image" content="https://focalstudio.github.io/assets/brand/og-image.png?v=20261006b" />
+  <!-- app-meta:end -->
   <link rel="icon" href="assets/brand/aperture.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -53,9 +55,10 @@
   </nav>
 
   <main id="main">
-    <!-- Rendered from assets/apps.json using ?app=<slug> -->
+    <!-- app-detail:start: rendered from assets/apps.json using ?app=<slug>; apps/<slug>.html gets it prerendered -->
     <div data-app-detail></div>
     <noscript><div class="container"><p class="empty-state">The app catalog needs JavaScript. You can still <a class="accent" href="contact.html">get in touch</a>.</p></div></noscript>
+    <!-- app-detail:end -->
   </main>
 
   <!-- ── Footer ───────────────────────────────────────────── -->
@@ -97,6 +100,6 @@
     </div>
   </footer>
 
-  <script src="assets/script.js?v=20261006b"></script>
+  <script src="assets/script.js?v=20261006c"></script>
 </body>
 </html>

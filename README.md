@@ -4,15 +4,16 @@ The studio site and app catalog for Focal Studio, published with GitHub Pages at
 https://focalstudio.github.io.
 
 ## Overview
-- Stack: plain HTML, CSS, and JavaScript. There is no build step, framework, or package manager.
+- Stack: plain HTML, CSS, and JavaScript. There is no framework or package manager. The only generated files are the static app pages in `apps/`, which a workflow keeps up to date.
 - Every app surface (the hero orbit, the catalog, the app pages, the stats) renders from **one file: `assets/apps.json`**.
 - Adding, announcing, or releasing an app is a data change, never a markup change. Most of those changes are made by automation (see [How apps get onto the site](#how-apps-get-onto-the-site)).
 
 ## Site Structure
 - `index.html`: homepage. Hero with the app orbit, catalog, studio principles, contact CTA.
 - `apps.html`: the full catalog, with status filters.
-- `app.html?app=<slug>`: the page for any app, generated from its `apps.json` entry.
-- `app-wildfocus.html`: redirects to `app.html?app=wildfocus` so old links keep working.
+- `apps/<slug>.html`: the static, crawlable page for each app, generated from its `apps.json` entry by `scripts/build-app-pages.mjs`. **Don't hand-edit these.** Catalog cards and the lens link here.
+- `app.html?app=<slug>`: the same page rendered in the browser. It still works, and its `canonical` points at `apps/<slug>.html`. It is also the shell (nav, footer, assets) the static pages are built from.
+- `app-wildfocus.html`: redirects to `apps/wildfocus.html` so old links keep working.
 - `contact.html`: contact links.
 - `404.html`: branded "out of focus" page. GitHub Pages serves it at any unknown URL, so every path in it is absolute (`/assets/...`).
 - `privacy-policy.html`, `privacy-<slug>.html`, `terms.html`: legal pages. These are self-contained and published by each app repo's `publish-privacy.yml`. **Do not restyle or hand-edit them.**
@@ -23,9 +24,10 @@ https://focalstudio.github.io.
 - `assets/brand/aperture.svg`: the aperture mark and favicon.
 - `assets/brand/og-image.png`: the 1200×630 social preview every page points `og:image` at. Its source, `og-image.html`, reads `apps.json`. After the catalog changes, regenerate it with `node scripts/render-og.mjs` (needs only Node and Chrome). Then bump the `?v=` on every `og:image` and `twitter:image` URL. Preview services cache images by URL, so without a new URL they keep showing the old picture.
 - `scripts/validate-apps.mjs`: checks `apps.json`.
+- `scripts/build-app-pages.mjs`: writes `apps/<slug>.html` from `apps.json`, `app.html` and `detailHtml()` in `assets/script.js`. `--check` exits 1 if any page is stale.
 - `scripts/check-stores.mjs`: the store watcher.
 - `scripts/register-app.mjs`: adds or refreshes one app. The template's `register-website.yml` calls it.
-- `.github/workflows/`: `validate.yml` (catalog checks on every PR) and `store-watch.yml` (daily store check).
+- `.github/workflows/`: `validate.yml` (catalog checks on every PR), `store-watch.yml` (daily store check) and `app-pages.yml` (regenerates `apps/` on `main` and opens a bot PR).
 
 ## Local Preview
 `assets/apps.json` is loaded with `fetch`, so use a local server. Opening the files directly from disk won't work.
@@ -84,11 +86,11 @@ The template ships `register-website.yml`, a reusable workflow, plus a stub that
 A new app arrives as `coming-soon`. For an app that's already listed, only its identity fields (name, tagline, color, icon, IDs) are refreshed; its status, store links and page copy are never touched.
 
 ### Editing an app by hand
-Edit its entry in `assets/apps.json`, then run `node scripts/validate-apps.mjs`. Fields:
+Edit its entry in `assets/apps.json`, then run `node scripts/validate-apps.mjs` and `node scripts/build-app-pages.mjs`, and commit the regenerated `apps/` pages with it. If you skip the build, `app-pages.yml` opens a PR with the pages after merge. Fields:
 
 ```jsonc
 {
-  "slug": "mealcart",                 // URL id: app.html?app=mealcart
+  "slug": "mealcart",                 // URL id: apps/mealcart.html
   "name": "MealCart",
   "tagline": "From recipe to shopping list in one tap.",
   "description": "Optional second sentence for the featured card and app page.",

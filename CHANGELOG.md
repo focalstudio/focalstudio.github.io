@@ -4,6 +4,13 @@ All notable changes to this repository will be documented in this file.
 
 ## 2026-10-06
 
+### Added
+- Static, crawlable app pages: `apps/<slug>.html`, with each app's own title, description, canonical, Open Graph / Twitter tags and full page content (#22). `scripts/build-app-pages.mjs` builds them from `apps.json`, using `app.html` as the shell and the same `detailHtml()` in `assets/script.js` that renders `app.html?app=<slug>`, so the two can't drift. `app-pages.yml` regenerates them on `main` and opens a bot PR.
+
+### Changed
+- Catalog cards and the lens link to `apps/<slug>.html`. `app.html?app=<slug>` still works and sets its `canonical` to the static page.
+- `app-wildfocus.html` now redirects to `apps/wildfocus.html`.
+
 ### Changed
 - New headline: **"One thing at a time."** It means you focus on one task, each app does one job, and the studio builds one app at a time. The hero subtitle now says so, and drops "No accounts. No tracking.", which isn't true of every app.
 - The social preview image carries the new headline and an "Explore the apps →" call to action.

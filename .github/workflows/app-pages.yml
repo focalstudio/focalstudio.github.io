@@ -1,0 +1,111 @@
+name: App pages
+
+# Regenerates the static, crawlable app pages (apps/<slug>.html) whenever the catalog or
+# the page template changes on main, and opens (or updates) one PR with the result. It
+# never merges: that is a human's call. Merging the PR only touches apps/, so it doesn't
+# trigger this workflow again.
+#
+# Writes go through the Focal Studio Cross-Repo Bot, like store-watch.yml (see there for
+# why not GITHUB_TOKEN). Without credentials it still builds and reports what would change.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/apps.json"
+      - "assets/script.js"
+      - "app.html"
+      - "scripts/build-app-pages.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: bot/app-pages
+      TITLE: "chore(pages): regenerate app pages"
+    steps:
+      # Secrets can't be tested in a step-level `if:`, so they come through env first.
+      - name: Check for bot credentials
+        id: creds
+        env:
+          APP_ID: ${{ secrets.FOCALSTUDIO_BOT_APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.FOCALSTUDIO_BOT_PRIVATE_KEY }}
+        run: |
+          if [ -n "$APP_ID" ] && [ -n "$APP_PRIVATE_KEY" ]; then
+            echo "has_creds=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_creds=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::FOCALSTUDIO_BOT_APP_ID / FOCALSTUDIO_BOT_PRIVATE_KEY are not available — the build can report, but not open a PR."
+          fi
+
+      - name: Mint a scoped installation token
+        id: app-token
+        if: steps.creds.outputs.has_creds == 'true'
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.FOCALSTUDIO_BOT_APP_ID }}
+          private-key: ${{ secrets.FOCALSTUDIO_BOT_PRIVATE_KEY }}
+          owner: focalstudio
+          repositories: focalstudio.github.io
+
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token || github.token }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build the app pages
+        id: build
+        run: |
+          node scripts/build-app-pages.mjs | tee "$RUNNER_TEMP/build.log"
+          if [ -n "$(git status --porcelain -- apps)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+          {
+            echo "Regenerated from \`assets/apps.json\` by \`scripts/build-app-pages.mjs\` after ${GITHUB_SHA::7}."
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/build.log"
+            echo '```'
+          } > "$RUNNER_TEMP/summary.md"
+          cat "$RUNNER_TEMP/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update the PR
+        if: steps.build.outputs.changed == 'true'
+        env:
+          HAS_CREDS: ${{ steps.creds.outputs.has_creds }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          APP_ID: ${{ secrets.FOCALSTUDIO_BOT_APP_ID }}
+        run: |
+          if [ "$HAS_CREDS" != "true" ]; then
+            echo "::error::The app pages changed but there are no bot credentials to open the PR with."
+            exit 1
+          fi
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${APP_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add -A apps
+          git commit -m "$TITLE"
+          # One stable bot-owned branch, force-updated: a re-run refreshes the open PR.
+          git push --force origin "$BRANCH"
+
+          EXISTING=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh pr edit "$EXISTING" --body-file "$RUNNER_TEMP/summary.md"
+            echo "Updated PR #$EXISTING"
+          else
+            gh pr create --base main --head "$BRANCH" --title "$TITLE" --body-file "$RUNNER_TEMP/summary.md"
+          fi
