@@ -538,6 +538,8 @@ a:hover { color: var(--accent); }
   transform: translateZ(-16px) scale(1.015);
   pointer-events: auto;
   touch-action: pan-y;
+  -webkit-touch-callout: none;       /* no link preview on a long press mid-swipe */
+  -webkit-tap-highlight-color: transparent;
   cursor: grab;
   background:
     radial-gradient(circle at 50% 46%, rgba(91, 208, 138, 0.10), rgba(11, 11, 13, 0.2) 42%, #050507 76%),
@@ -722,7 +724,7 @@ a:hover { color: var(--accent); }
 }
 
 /* Invisible grip over the focus ring: drag it round, or tap a marking */
-.lens-dial { transform: translateZ(24px); touch-action: pan-y; }
+.lens-dial { transform: translateZ(24px); touch-action: none; -webkit-tap-highlight-color: transparent; }
 
 .lens-dial circle {
   fill: none;
