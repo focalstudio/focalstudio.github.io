@@ -1,0 +1,8 @@
+# Personal Claude Code settings (permissions, paths on this machine)
+.claude/settings.local.json
+
+# Generic Claude Code skills kept locally; only site-specific skills are committed
+.claude/skills/frontend_design/
+.claude/skills/react-native-skills/
+.claude/skills/skill_creator/
+.claude/skills/ui-ux-pro-max/
