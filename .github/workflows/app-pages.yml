@@ -1,9 +1,10 @@
 name: App pages
 
-# Regenerates the static, crawlable app pages (apps/<slug>.html) and sitemap.xml whenever
-# the catalog or the page template changes on main, and opens (or updates) one PR with the
-# result. It never merges: that is a human's call. Merging the PR only touches apps/ and
-# sitemap.xml, so it doesn't trigger this workflow again.
+# Regenerates the static, crawlable app pages (apps/<slug>.html), sitemap.xml and the
+# prerendered catalog in index.html / apps.html whenever the catalog or the page template
+# changes on main, and opens (or updates) one PR with the result. It never merges: that is
+# a human's call. Merging the PR only touches generated files, none of them in the paths
+# below, so it doesn't trigger this workflow again.
 #
 # Writes go through the Focal Studio Cross-Repo Bot, like store-watch.yml (see there for
 # why not GITHUB_TOKEN). Without credentials it still builds and reports what would change.
@@ -68,7 +69,7 @@ jobs:
         id: build
         run: |
           node scripts/build-app-pages.mjs | tee "$RUNNER_TEMP/build.log"
-          if [ -n "$(git status --porcelain -- apps sitemap.xml)" ]; then
+          if [ -n "$(git status --porcelain -- apps sitemap.xml index.html apps.html)" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -97,7 +98,7 @@ jobs:
           git config user.name "${APP_SLUG}[bot]"
           git config user.email "${APP_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
           git checkout -B "$BRANCH"
-          git add -A apps sitemap.xml
+          git add -A apps sitemap.xml index.html apps.html
           git commit -m "$TITLE"
           # One stable bot-owned branch, force-updated: a re-run refreshes the open PR.
           git push --force origin "$BRANCH"

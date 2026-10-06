@@ -22,6 +22,29 @@
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Focal Studio — one thing at a time. An aperture lens focused on an app." />
   <meta name="twitter:image" content="https://focalstudio.github.io/assets/brand/og-image.png?v=20261006b" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://focalstudio.github.io/#organization",
+        "name": "Focal Studio",
+        "url": "https://focalstudio.github.io/",
+        "logo": "https://focalstudio.github.io/assets/brand/apple-touch-icon.png",
+        "email": "focalstudio.apps@gmail.com",
+        "sameAs": ["https://www.tiktok.com/@focalstudio_apps", "https://www.reddit.com/user/FocalStudio/"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://focalstudio.github.io/#website",
+        "name": "Focal Studio",
+        "url": "https://focalstudio.github.io/",
+        "publisher": { "@id": "https://focalstudio.github.io/#organization" }
+      }
+    ]
+  }
+  </script>
   <link rel="icon" href="assets/brand/aperture.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -94,7 +117,7 @@
           <div data-app-lens></div>
         </div>
 
-        <div class="stats" data-stats aria-label="Studio at a glance"></div>
+        <div class="stats" data-stats aria-label="Studio at a glance"><!-- stats:start: prerendered by scripts/build-app-pages.mjs --><div class="stat"><span class="stat-value">5</span><span class="stat-label">Apps in the catalog</span></div><div class="stat"><span class="stat-value">1</span><span class="stat-label">Out now</span></div><div class="stat"><span class="stat-value">4</span><span class="stat-label">In the works</span></div><div class="stat"><span class="stat-value">iOS + Android</span><span class="stat-label">Platforms</span></div><!-- stats:end --></div>
       </div>
     </section>
 
@@ -111,8 +134,13 @@
           </p>
         </div>
 
-        <div class="catalog catalog--home" data-catalog="home"></div>
-        <noscript><div class="container"><p class="empty-state">The app catalog needs JavaScript. You can still <a class="accent" href="contact.html">get in touch</a>.</p></div></noscript>
+        <div class="catalog catalog--home" data-catalog="home" data-prerendered="1i9i3rd"><!-- catalog:start: prerendered by scripts/build-app-pages.mjs -->
+          <article class="app-card reveal app-card--featured" id="app-wildfocus" data-status="released" style="--app-color:#E8B48F;--i:0"><div class="app-card-top"><img class="app-card-icon" src="assets/app-icons/wildfocus.jpeg" alt="" width="64" height="64" loading="lazy" /><span class="pill pill--released">Out now</span></div><div class="app-card-body"><h3 class="app-card-name"><a class="app-card-cover" href="apps/wildfocus.html">WildFocus</a></h3><p class="app-card-tagline">Turn your focus sessions into a pet collection.</p><p class="app-card-tagline">Every timer you complete earns you a new creature. Beat procrastination one Pomodoro at a time.</p></div><div class="app-card-footer"><div class="chips"><span class="chip">iPhone</span><span class="chip">Android</span></div><span class="app-card-link">View app <span class="btn-arrow" aria-hidden="true">→</span></span></div><div class="app-card-peek" aria-hidden="true"><img src="assets/screenshots/Timer.webp" alt="" loading="lazy" /><img src="assets/screenshots/Rescue.webp" alt="" loading="lazy" /><img src="assets/screenshots/Collection.webp" alt="" loading="lazy" /></div></article>
+          <article class="app-card reveal is-soon" id="app-mealcart" data-status="coming-soon" style="--app-color:#4E9A6E;--i:1"><div class="app-card-top"><img class="app-card-icon" src="assets/app-icons/mealcart.png" alt="" width="64" height="64" loading="lazy" /><span class="pill pill--coming-soon">Coming soon</span></div><div class="app-card-body"><h3 class="app-card-name"><a class="app-card-cover" href="apps/mealcart.html">MealCart</a></h3><p class="app-card-tagline">From recipe to shopping list in one tap.</p></div><div class="app-card-footer"><div class="chips"><span class="chip">iPhone</span><span class="chip">Android</span></div><span class="app-card-muted">Sneak peek →</span></div></article>
+          <article class="app-card reveal is-soon" id="app-staylock" data-status="coming-soon" style="--app-color:#2F7BFF;--i:2"><div class="app-card-top"><img class="app-card-icon" src="assets/app-icons/staylock.png" alt="" width="64" height="64" loading="lazy" /><span class="pill pill--coming-soon">Coming soon</span></div><div class="app-card-body"><h3 class="app-card-name"><a class="app-card-cover" href="apps/staylock.html">StayLock</a></h3><p class="app-card-tagline">Block distractions on a schedule.</p></div><div class="app-card-footer"><div class="chips"><span class="chip">iPhone</span><span class="chip">Android</span></div><span class="app-card-muted">Sneak peek →</span></div></article>
+          <article class="app-card reveal is-soon" id="app-tick" data-status="coming-soon" style="--app-color:#5B6CE8;--i:3"><div class="app-card-top"><img class="app-card-icon" src="assets/app-icons/tick.png" alt="" width="64" height="64" loading="lazy" /><span class="pill pill--coming-soon">Coming soon</span></div><div class="app-card-body"><h3 class="app-card-name"><a class="app-card-cover" href="apps/tick.html">Tick</a></h3><p class="app-card-tagline">A beautiful clock for your desk</p></div><div class="app-card-footer"><div class="chips"><span class="chip">iPhone</span><span class="chip">Android</span></div><span class="app-card-muted">Sneak peek →</span></div></article>
+          <article class="app-card reveal is-soon" id="app-vestia" data-status="coming-soon" style="--app-color:#5B8CF5;--i:4"><div class="app-card-top"><img class="app-card-icon" src="assets/app-icons/vestia.png" alt="" width="64" height="64" loading="lazy" /><span class="pill pill--coming-soon">Coming soon</span></div><div class="app-card-body"><h3 class="app-card-name"><a class="app-card-cover" href="apps/vestia.html">Vestia</a></h3><p class="app-card-tagline">Rules-based investing discipline for long-term investors.</p></div><div class="app-card-footer"><div class="chips"><span class="chip">iPhone</span><span class="chip">Android</span></div><span class="app-card-muted">Sneak peek →</span></div></article>
+        <!-- catalog:end --></div>
       </div>
     </section>
 
@@ -151,19 +179,19 @@
         <div class="pipeline" aria-label="How an app ships">
           <div class="pipeline-step reveal">
             <span class="pill pill--in-development">In development</span>
-            <span class="pipeline-count" data-count="in-development" aria-hidden="true"></span>
+            <span class="pipeline-count" data-count="in-development" aria-hidden="true">0</span>
             <h3>Built in the studio</h3>
             <p>Prototyped, tested and refined until it feels effortless.</p>
           </div>
           <div class="pipeline-step reveal" style="--i:1">
             <span class="pill pill--coming-soon">Coming soon</span>
-            <span class="pipeline-count" data-count="coming-soon" aria-hidden="true"></span>
+            <span class="pipeline-count" data-count="coming-soon" aria-hidden="true">4</span>
             <h3>On the launchpad</h3>
             <p>Announced here first, then submitted to the stores.</p>
           </div>
           <div class="pipeline-step reveal" style="--i:2">
             <span class="pill pill--released">Out now</span>
-            <span class="pipeline-count" data-count="released" aria-hidden="true"></span>
+            <span class="pipeline-count" data-count="released" aria-hidden="true">1</span>
             <h3>In your pocket</h3>
             <p>Live on the App Store or Google Play, and still improving.</p>
           </div>
@@ -226,6 +254,6 @@
     </div>
   </footer>
 
-  <script src="assets/script.js?v=20261006d"></script>
+  <script src="assets/script.js?v=20261006e"></script>
 </body>
 </html>

@@ -114,55 +114,6 @@
     return html;
   }
 
-  /* In Node, hand the app page template to scripts/build-app-pages.mjs and stop */
-  if (typeof module === 'object' && module.exports) {
-    module.exports = { detailHtml: detailHtml, detailMeta: detailMeta, detailHref: detailHref, esc: esc, local: local, SITE_URL: SITE_URL };
-    return;
-  }
-
-  /* ── Mobile navigation ────────────────────────────────────── */
-
-  (function initNav() {
-    var toggle = document.querySelector('.nav-toggle');
-    var links = document.querySelector('.nav-links');
-    if (!toggle || !links) return;
-
-    toggle.addEventListener('click', function () {
-      var isOpen = links.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    });
-
-    links.querySelectorAll('a').forEach(function (a) {
-      a.addEventListener('click', function () {
-        links.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-      });
-    });
-  })();
-
-  /* ── Scroll reveal ────────────────────────────────────────── */
-
-  var revealObserver = null;
-
-  function observeReveals(root) {
-    var els = (root || document).querySelectorAll('.reveal:not(.is-visible)');
-    if (!('IntersectionObserver' in window) || REDUCED_MOTION) {
-      els.forEach(function (el) { el.classList.add('is-visible'); });
-      return;
-    }
-    if (!revealObserver) {
-      revealObserver = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            revealObserver.unobserve(entry.target);
-          }
-        });
-      }, { rootMargin: '0px 0px -8% 0px' });
-    }
-    els.forEach(function (el) { revealObserver.observe(el); });
-  }
-
   /* ── Catalog cards ────────────────────────────────────────── */
 
   function buildCard(app, index, opts) {
@@ -213,18 +164,92 @@
     );
   }
 
-  function renderCatalog(host, apps) {
-    var home = host.getAttribute('data-catalog') === 'home';
+  /* The catalog grid; index.html and apps.html also get it prerendered */
+  function catalogHtml(apps, home) {
     var sorted = sortApps(apps);
-
-    if (!sorted.length) {
-      host.innerHTML = '<p class="empty-state">New apps are on the way. Check back soon.</p>';
-      return;
-    }
-
-    host.innerHTML = sorted.map(function (app, i) {
+    if (!sorted.length) return '<p class="empty-state">New apps are on the way. Check back soon.</p>';
+    return sorted.map(function (app, i) {
       return buildCard(app, i % 6, { home: home });
     }).join('');
+  }
+
+  function statsHtml(apps) {
+    var stats = [
+      { v: apps.length, l: 'Apps in the catalog' },
+      { v: count(apps, 'released'), l: 'Out now' },
+      { v: count(apps, 'in-development') + count(apps, 'coming-soon'), l: 'In the works' },
+      { v: 'iOS + Android', l: 'Platforms' }
+    ];
+    return stats.map(function (s) {
+      return '<div class="stat"><span class="stat-value">' + esc(s.v) + '</span><span class="stat-label">' + esc(s.l) + '</span></div>';
+    }).join('');
+  }
+
+  /* Fingerprints prerendered markup, so the browser can keep it when it's current */
+  function hashString(str) {
+    var h = 5381;
+    for (var i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+    return (h >>> 0).toString(36);
+  }
+
+  /* In Node, hand the page templates to scripts/build-app-pages.mjs and stop */
+  if (typeof module === 'object' && module.exports) {
+    module.exports = {
+      detailHtml: detailHtml, detailMeta: detailMeta, detailHref: detailHref, esc: esc, local: local, sentence: sentence,
+      catalogHtml: catalogHtml, statsHtml: statsHtml, count: count, hashString: hashString, SITE_URL: SITE_URL, CONTACT_EMAIL: CONTACT_EMAIL
+    };
+    return;
+  }
+
+  /* ── Mobile navigation ────────────────────────────────────── */
+
+  (function initNav() {
+    var toggle = document.querySelector('.nav-toggle');
+    var links = document.querySelector('.nav-links');
+    if (!toggle || !links) return;
+
+    toggle.addEventListener('click', function () {
+      var isOpen = links.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    links.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        links.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+
+  /* ── Scroll reveal ────────────────────────────────────────── */
+
+  var revealObserver = null;
+
+  function observeReveals(root) {
+    var els = (root || document).querySelectorAll('.reveal:not(.is-visible)');
+    if (!('IntersectionObserver' in window) || REDUCED_MOTION) {
+      els.forEach(function (el) { el.classList.add('is-visible'); });
+      return;
+    }
+    if (!revealObserver) {
+      revealObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px' });
+    }
+    els.forEach(function (el) { revealObserver.observe(el); });
+  }
+
+  /* ── Catalog ──────────────────────────────────────────────── */
+
+  function renderCatalog(host, apps) {
+    var html = catalogHtml(apps, host.getAttribute('data-catalog') === 'home');
+    /* Prerendered by scripts/build-app-pages.mjs: keep it when it matches the data, so it doesn't fade in twice */
+    if (host.getAttribute('data-prerendered') !== hashString(html)) host.innerHTML = html;
 
     var filterHost = document.querySelector('[data-catalog-filters]');
     if (filterHost) renderFilters(filterHost, host, apps);
@@ -259,15 +284,7 @@
   /* ── Stats + pipeline counts ──────────────────────────────── */
 
   function renderStats(host, apps) {
-    var stats = [
-      { v: apps.length, l: 'Apps in the catalog' },
-      { v: count(apps, 'released'), l: 'Out now' },
-      { v: count(apps, 'in-development') + count(apps, 'coming-soon'), l: 'In the works' },
-      { v: 'iOS + Android', l: 'Platforms' }
-    ];
-    host.innerHTML = stats.map(function (s) {
-      return '<div class="stat"><span class="stat-value">' + esc(s.v) + '</span><span class="stat-label">' + esc(s.l) + '</span></div>';
-    }).join('');
+    host.innerHTML = statsHtml(apps);
   }
 
   function renderCounts(apps) {
@@ -1068,6 +1085,7 @@
   function fail(err) {
     if (window.console) console.error('Focal Studio: could not load apps.json', err);
     document.querySelectorAll('[data-catalog], [data-app-detail]').forEach(function (el) {
+      if (el.querySelector('.app-card')) return; /* the prerendered catalog beats an error */
       el.innerHTML = '<p class="empty-state">The catalog didn’t load. <a class="accent" href="">Try again</a>.</p>';
     });
     observeReveals();
