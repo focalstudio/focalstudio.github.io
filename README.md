@@ -16,18 +16,19 @@ https://focalstudio.github.io.
 - `app-wildfocus.html`: redirects to `apps/wildfocus.html` so old links keep working.
 - `contact.html`: contact links.
 - `404.html`: branded "out of focus" page. GitHub Pages serves it at any unknown URL, so every path in it is absolute (`/assets/...`).
+- `robots.txt`: points crawlers at `sitemap.xml` and keeps them off `privacy-policy-template.html`.
 - `privacy-policy.html`, `privacy-<slug>.html`, `terms.html`: legal pages. These are self-contained and published by each app repo's `publish-privacy.yml`. **Do not restyle or hand-edit them.**
 - `assets/apps.json`: the catalog data.
 - `assets/styles.css`: the design system (tokens at the top).
 - `assets/script.js`: the renderers (orbit, catalog, detail page, stats, beta bar).
 - `assets/app-icons/`: app icons. Square, about 384px.
-- `assets/brand/aperture.svg`: the aperture mark and favicon.
+- `assets/brand/aperture.svg`: the aperture mark and favicon. `apple-touch-icon.png` is its 180×180 PNG for iOS home screens.
 - `assets/brand/og-image.png`: the 1200×630 social preview every page points `og:image` at. Its source, `og-image.html`, reads `apps.json`. After the catalog changes, regenerate it with `node scripts/render-og.mjs` (needs only Node and Chrome). Then bump the `?v=` on every `og:image` and `twitter:image` URL. Preview services cache images by URL, so without a new URL they keep showing the old picture.
 - `scripts/validate-apps.mjs`: checks `apps.json`.
-- `scripts/build-app-pages.mjs`: writes `apps/<slug>.html` from `apps.json`, `app.html` and `detailHtml()` in `assets/script.js`. `--check` exits 1 if any page is stale.
+- `scripts/build-app-pages.mjs`: writes `apps/<slug>.html` from `apps.json`, `app.html` and `detailHtml()` in `assets/script.js`, plus `sitemap.xml`. `--check` exits 1 if any page or the sitemap is stale.
 - `scripts/check-stores.mjs`: the store watcher.
 - `scripts/register-app.mjs`: adds or refreshes one app. The template's `register-website.yml` calls it.
-- `.github/workflows/`: `validate.yml` (catalog checks on every PR), `store-watch.yml` (daily store check) and `app-pages.yml` (regenerates `apps/` on `main` and opens a bot PR).
+- `.github/workflows/`: `validate.yml` (catalog checks on every PR), `store-watch.yml` (daily store check) and `app-pages.yml` (regenerates `apps/` and `sitemap.xml` on `main` and opens a bot PR).
 
 ## Local Preview
 `assets/apps.json` is loaded with `fetch`, so use a local server. Opening the files directly from disk won't work.
@@ -86,7 +87,7 @@ The template ships `register-website.yml`, a reusable workflow, plus a stub that
 A new app arrives as `coming-soon`. For an app that's already listed, only its identity fields (name, tagline, color, icon, IDs) are refreshed; its status, store links and page copy are never touched.
 
 ### Editing an app by hand
-Edit its entry in `assets/apps.json`, then run `node scripts/validate-apps.mjs` and `node scripts/build-app-pages.mjs`, and commit the regenerated `apps/` pages with it. If you skip the build, `app-pages.yml` opens a PR with the pages after merge. Fields:
+Edit its entry in `assets/apps.json`, then run `node scripts/validate-apps.mjs` and `node scripts/build-app-pages.mjs`, and commit the regenerated `apps/` pages and `sitemap.xml` with it. If you skip the build, `app-pages.yml` opens a PR with the pages after merge. Fields:
 
 ```jsonc
 {
