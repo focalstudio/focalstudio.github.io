@@ -843,8 +843,8 @@ a:hover { color: var(--accent); }
 .lens:not(.is-ready) .lens-item { opacity: 0; }
 
 /* Compact, decorative variant for the catalog header */
-.lens--compact,
-.lens--compact .lens-window { max-width: 340px; pointer-events: none; }
+.lens--compact { max-width: 340px; pointer-events: none; }
+.lens--compact .lens-window { pointer-events: none; }
 
 /* ── 9. Status pills + platform chips ───────────────────────── */
 .pill {

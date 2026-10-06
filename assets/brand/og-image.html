@@ -1,17 +1,22 @@
 <!DOCTYPE html>
-<!-- Source for og-image.png (1200×630 social preview). Reads /assets/apps.json, so the
-     orbit always shows the current catalog. Regenerate with: node scripts/render-og.mjs -->
+<!-- Source for og-image.png (1200×630 social preview). It renders the site's own lens
+     (assets/script.js, compact mode) from /assets/apps.json, so the preview always matches
+     the hero. Regenerate with: node scripts/render-og.mjs -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <base href="/" />   <!-- app icon paths in apps.json are relative to the site root -->
   <title>Focal Studio — social preview</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="/assets/styles.css" />
   <style>
     :root { --bg: #0B0B0D; --text: #F2F2F3; --muted: #9A9AA3; --accent: #5BD08A; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 1200px; height: 630px; overflow: hidden; }
     body {
       position: relative;
+      min-height: 0;
+      line-height: normal;
       font-family: "Geist", system-ui, sans-serif;
       color: var(--text);
       background:
@@ -32,15 +37,10 @@
     .meta { position: absolute; left: 84px; bottom: 74px; display: flex; gap: 14px; align-items: center;
       font-family: "Geist Mono", monospace; font-size: 17px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
     .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
-    .orbit { position: absolute; left: 640px; top: 40px; width: 520px; height: 550px; }
-    .orbit svg.rings { position: absolute; inset: 0; overflow: visible; }
-    .core { position: absolute; left: 50%; top: 50%; width: 136px; height: 136px; transform: translate(-50%, -50%); border-radius: 50%;
-      display: grid; place-items: center; z-index: 2;
-      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.10), transparent 45%), radial-gradient(circle, #17171B, #0E0E11 70%);
-      border: 1px solid rgba(255,255,255,0.10); box-shadow: 0 0 90px rgba(91,208,138,0.35), inset 0 -18px 40px rgba(0,0,0,0.5); }
-    .core svg { width: 78px; height: 78px; color: var(--accent); filter: drop-shadow(0 0 10px rgba(91,208,138,0.5)); }
-    .icon { position: absolute; width: 78px; height: 78px; border-radius: 19px; object-fit: cover;
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.12), 0 14px 30px -8px rgba(0,0,0,0.8); }
+    body::before { display: none; }
+    /* The site's lens, larger than its compact catalog size */
+    .og-lens { position: absolute; left: 640px; top: 60px; width: 510px; }
+    .og-lens .lens--compact { max-width: none; }
   </style>
 </head>
 <body>
@@ -55,46 +55,20 @@
   </div>
   <div class="meta"><span class="dot"></span><span id="count">Independent app studio</span><span>·</span><span>focalstudio.github.io</span></div>
 
-  <div class="orbit" id="orbit">
-    <svg class="rings" id="rings" viewBox="0 0 520 550"></svg>
-    <div class="core">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7.4L21.94 13.14M15.98 9.7L15.98 21.17M15.98 14.3L6.05 20.04M12 16.6L2.06 10.86M8.02 14.3L8.02 2.83M8.02 9.7L17.95 3.96"/></svg>
-    </div>
-  </div>
+  <div class="og-lens"><div class="lens--compact" data-app-lens data-lens-compact></div></div>
 
+  <script src="/assets/script.js"></script>
   <script>
-    // Same ring logic as the site's orbit: shipped/beta inside, coming soon outside.
     fetch('/assets/apps.json').then((r) => r.json()).then(({ apps }) => {
-      const W = 520, H = 550, cx = W / 2, cy = H / 2, phi = -16 * Math.PI / 180;
-      const rings = [
-        { apps: apps.filter((a) => a.status !== 'coming-soon'), rx: 150, soon: false, phase: 0.35 },
-        { apps: apps.filter((a) => a.status === 'coming-soon'), rx: 238, soon: true, phase: 1.15 },
-      ].filter((r) => r.apps.length);
-      const svg = document.getElementById('rings');
-      const orbit = document.getElementById('orbit');
-      rings.forEach((ring) => {
-        const ry = ring.rx * 0.46, tint = ring.soon ? '142,155,255' : '91,208,138';
-        svg.insertAdjacentHTML('beforeend',
-          `<ellipse cx="${cx}" cy="${cy}" rx="${ring.rx}" ry="${ry}" transform="rotate(-16 ${cx} ${cy})" fill="none"
-            stroke="rgba(${tint},0.45)" stroke-width="1.2" ${ring.soon ? 'stroke-dasharray="2 7" stroke-linecap="round"' : ''}/>`);
-        ring.apps.forEach((app, i) => {
-          const t = ring.phase + (i / ring.apps.length) * Math.PI * 2;
-          const lx = Math.cos(t) * ring.rx, ly = Math.sin(t) * ry;
-          const x = lx * Math.cos(phi) - ly * Math.sin(phi), y = lx * Math.sin(phi) + ly * Math.cos(phi);
-          const depth = (Math.sin(t) + 1) / 2, s = 0.66 + 0.34 * depth;
-          const img = new Image();
-          img.className = 'icon';
-          img.src = '/' + app.icon;
-          img.style.cssText = `left:${cx + x - 39}px;top:${cy + y - 39}px;transform:scale(${s.toFixed(3)});` +
-            `opacity:${(0.45 + 0.55 * depth).toFixed(2)};z-index:${depth >= 0.5 ? 3 : 1};` +
-            `box-shadow:0 0 0 1px rgba(255,255,255,.12),0 14px 30px -8px rgba(0,0,0,.8),0 0 36px -6px ${app.color || '#5BD08A'}`;
-          orbit.appendChild(img);
-        });
-      });
       const live = apps.filter((a) => a.status === 'released').length;
       document.getElementById('count').textContent = `${apps.length} apps · ${live} out now`;
-      return Promise.all([document.fonts.ready, ...[...document.images].map((i) => i.decode().catch(() => {}))]);
-    }).then(() => { window.__ogReady = true; });
+      /* Ready once the lens has rendered and every image and font has loaded */
+      const lensReady = new Promise((resolve) => {
+        const check = () => document.querySelector('.lens.is-ready') ? resolve() : requestAnimationFrame(check);
+        check();
+      });
+      return lensReady.then(() => Promise.all([document.fonts.ready, ...[...document.images].map((i) => i.decode().catch(() => {}))]));
+    }).then(() => requestAnimationFrame(() => { window.__ogReady = true; }));
   </script>
 </body>
 </html>
