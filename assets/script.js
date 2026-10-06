@@ -936,7 +936,7 @@
   function detailMeta(app) {
     return {
       title: app.name + ' — Focal Studio',
-      description: app.name + ': ' + (app.tagline || '') + ' A Focal Studio app.'
+      description: app.name + ': ' + sentence(app.tagline) + ' A Focal Studio app.'
     };
   }
 
