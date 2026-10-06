@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 // Writes a static, crawlable page for every app in assets/apps.json: apps/<slug>.html,
-// plus sitemap.xml.
+// plus sitemap.xml and the prerendered catalog, stats and counts in index.html / apps.html.
 // No dependencies. The page shell (nav, footer, assets) comes from app.html and the body
 // from detailHtml() in assets/script.js, the same code app.html?app=<slug> renders with,
-// so the two can't drift. app-pages.yml runs it on main and opens a PR with the result.
+// so the two can't drift. The catalog comes from catalogHtml(), which the browser also uses.
+// app-pages.yml runs it on main and opens a PR with the result.
 //
 // Usage: node scripts/build-app-pages.mjs [--check]
-//   --check  write nothing; exit 1 if any page or the sitemap is missing, stale or orphaned
+//   --check  write nothing; exit 1 if any generated file is missing, stale or orphaned
 
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync, unlinkSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
@@ -17,7 +18,9 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT_DIR = resolve(ROOT, 'apps');
 const CHECK = process.argv.includes('--check');
 
-const { detailHtml, detailMeta, detailHref, esc, local, SITE_URL } = createRequire(import.meta.url)('../assets/script.js');
+const {
+  detailHtml, detailMeta, detailHref, esc, local, sentence, catalogHtml, statsHtml, count, hashString, SITE_URL
+} = createRequire(import.meta.url)('../assets/script.js');
 const { apps } = JSON.parse(readFileSync(resolve(ROOT, 'assets/apps.json'), 'utf8'));
 const shell = readFileSync(resolve(ROOT, 'app.html'), 'utf8');
 
@@ -55,8 +58,31 @@ function metaTags(app) {
     tag('name', 'twitter:title', title),
     tag('name', 'twitter:description', description),
     tag('name', 'twitter:image', image),
+    `  <script type="application/ld+json">${jsonLd(app, url, image)}</script>`,
     ''
   ].join('\n');
+}
+
+// schema.org MobileApplication. Only what apps.json knows: no price, category or rating
+const OS = { ios: 'iOS', android: 'Android' };
+function jsonLd(app, url, image) {
+  const stores = [app.appStoreUrl, app.playStoreUrl].filter((u) => typeof u === 'string' && u.startsWith('https://'));
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'MobileApplication',
+    name: app.name,
+    description: [sentence(app.tagline), app.description].filter(Boolean).join(' '),
+    url,
+    image,
+    operatingSystem: (app.platforms || []).map((p) => OS[p] || p).join(', '),
+    publisher: { '@type': 'Organization', name: 'Focal Studio', url: SITE_URL }
+  };
+  if (app.status === 'released' && stores.length) {
+    data.downloadUrl = stores[0];
+    data.sameAs = stores;
+  }
+  // < escaped so app text can never close the script tag
+  return JSON.stringify(data).replace(/</g, '\\u003c');
 }
 
 function page(app) {
@@ -83,28 +109,48 @@ function sitemap() {
   ].join('\n');
 }
 
-const wanted = new Map(apps.map((app) => [`${app.slug}.html`, page(app)]));
-const existing = existsSync(OUT_DIR) ? readdirSync(OUT_DIR).filter((f) => f.endsWith('.html')) : [];
-const changes = [];
+// index.html / apps.html: fill the catalog, stats and pipeline counts, so they read without JS.
+// The catalog host carries a hash of catalogHtml(); script.js keeps the cards when it matches.
+const CATALOG = /(<div [^>]*data-catalog="(home|full)")(?: data-prerendered="[^"]*")?(>[ \t]*<!-- catalog:start[^>]*-->)[\s\S]*?(<!-- catalog:end -->)/g;
+const STATS = /(<!-- stats:start[^>]*-->)[\s\S]*?(<!-- stats:end -->)/g;
+const COUNT = /(<span class="pipeline-count" data-count="([a-z-]+)"[^>]*>)[^<]*(<\/span>)/g;
 
-const SITEMAP = resolve(ROOT, 'sitemap.xml');
-const map = sitemap();
-const mapBefore = existsSync(SITEMAP) ? readFileSync(SITEMAP, 'utf8') : null;
-if (mapBefore !== map) {
-  changes.push(`${mapBefore === null ? 'added' : 'updated'} sitemap.xml`);
-  if (!CHECK) writeFileSync(SITEMAP, map);
+function prerender(file) {
+  const html = readFileSync(resolve(ROOT, file), 'utf8');
+  if (!CATALOG.test(html)) {
+    console.error(`✗ ${file} is missing its catalog:start / catalog:end markers`);
+    process.exit(1);
+  }
+  CATALOG.lastIndex = 0;
+  return html
+    .replace(CATALOG, (_, open, kind, start, end) => {
+      const cards = catalogHtml(apps, kind === 'home');
+      // One card per line keeps bot PR diffs readable; grid layout ignores the whitespace
+      const lines = cards.replace(/<\/article><article/g, '</article>\n          <article');
+      return `${open} data-prerendered="${hashString(cards)}"${start}\n          ${lines}\n        ${end}`;
+    })
+    .replace(STATS, (_, start, end) => `${start}${statsHtml(apps)}${end}`)
+    .replace(COUNT, (_, open, status, close) => `${open}${count(apps, status)}${close}`);
 }
 
-for (const [file, html] of wanted) {
-  const path = resolve(OUT_DIR, file);
+const changes = [];
+function writeIfChanged(file, html) {
+  const path = resolve(ROOT, file);
   const before = existsSync(path) ? readFileSync(path, 'utf8') : null;
-  if (before === html) continue;
-  changes.push(`${before === null ? 'added' : 'updated'} apps/${file}`);
+  if (before === html) return;
+  changes.push(`${before === null ? 'added' : 'updated'} ${file}`);
   if (!CHECK) {
-    mkdirSync(OUT_DIR, { recursive: true });
+    mkdirSync(dirname(path), { recursive: true });
     writeFileSync(path, html);
   }
 }
+
+const wanted = new Map(apps.map((app) => [`${app.slug}.html`, page(app)]));
+const existing = existsSync(OUT_DIR) ? readdirSync(OUT_DIR).filter((f) => f.endsWith('.html')) : [];
+
+writeIfChanged('sitemap.xml', sitemap());
+for (const file of ['index.html', 'apps.html']) writeIfChanged(file, prerender(file));
+for (const [file, html] of wanted) writeIfChanged(`apps/${file}`, html);
 
 for (const file of existing) {
   if (wanted.has(file)) continue;
@@ -113,9 +159,9 @@ for (const file of existing) {
 }
 
 if (!changes.length) {
-  console.log(`✓ ${wanted.size} app pages are up to date`);
+  console.log(`✓ ${wanted.size} app pages, the sitemap and the prerendered catalog are up to date`);
 } else if (CHECK) {
-  console.error(`✗ App pages are out of date. Run node scripts/build-app-pages.mjs\n  ${changes.join('\n  ')}`);
+  console.error(`✗ Generated files are out of date. Run node scripts/build-app-pages.mjs\n  ${changes.join('\n  ')}`);
   process.exit(1);
 } else {
   console.log(`✓ ${changes.join('\n✓ ')}`);

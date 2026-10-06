@@ -9,8 +9,8 @@ https://focalstudio.github.io.
 - Adding, announcing, or releasing an app is a data change, never a markup change. Most of those changes are made by automation (see [How apps get onto the site](#how-apps-get-onto-the-site)).
 
 ## Site Structure
-- `index.html`: homepage. Hero with the app orbit, catalog, studio principles, contact CTA.
-- `apps.html`: the full catalog, with status filters.
+- `index.html`: homepage. Hero with the aperture lens, catalog, studio principles, contact CTA. Its catalog, stats and pipeline counts are prerendered between `<!-- catalog:start/end -->` and `<!-- stats:start/end -->` markers, so they read without JavaScript. Don't hand-edit inside the markers. It also carries the `Organization` / `WebSite` JSON-LD.
+- `apps.html`: the full catalog, with status filters. The cards are prerendered the same way.
 - `apps/<slug>.html`: the static, crawlable page for each app, generated from its `apps.json` entry by `scripts/build-app-pages.mjs`. **Don't hand-edit these.** Catalog cards and the lens link here.
 - `app.html?app=<slug>`: the same page rendered in the browser. It still works, and its `canonical` points at `apps/<slug>.html`. It is also the shell (nav, footer, assets) the static pages are built from.
 - `app-wildfocus.html`: redirects to `apps/wildfocus.html` so old links keep working.
@@ -25,10 +25,10 @@ https://focalstudio.github.io.
 - `assets/brand/aperture.svg`: the aperture mark and favicon. `apple-touch-icon.png` is its 180×180 PNG for iOS home screens.
 - `assets/brand/og-image.png`: the 1200×630 social preview every page points `og:image` at. Its source, `og-image.html`, reads `apps.json`. After the catalog changes, regenerate it with `node scripts/render-og.mjs` (needs only Node and Chrome). Then bump the `?v=` on every `og:image` and `twitter:image` URL. Preview services cache images by URL, so without a new URL they keep showing the old picture.
 - `scripts/validate-apps.mjs`: checks `apps.json`.
-- `scripts/build-app-pages.mjs`: writes `apps/<slug>.html` from `apps.json`, `app.html` and `detailHtml()` in `assets/script.js`, plus `sitemap.xml`. `--check` exits 1 if any page or the sitemap is stale.
+- `scripts/build-app-pages.mjs`: writes `apps/<slug>.html` from `apps.json`, `app.html` and `detailHtml()` in `assets/script.js` (each with `MobileApplication` JSON-LD), plus `sitemap.xml` and the prerendered regions of `index.html` / `apps.html` (from `catalogHtml()` / `statsHtml()`, the same code the browser runs). The catalog host carries a `data-prerendered` hash, and `script.js` keeps the static cards while it still matches `apps.json`. `--check` exits 1 if anything generated is stale.
 - `scripts/check-stores.mjs`: the store watcher.
 - `scripts/register-app.mjs`: adds or refreshes one app. The template's `register-website.yml` calls it.
-- `.github/workflows/`: `validate.yml` (catalog checks on every PR), `store-watch.yml` (daily store check) and `app-pages.yml` (regenerates `apps/` and `sitemap.xml` on `main` and opens a bot PR).
+- `.github/workflows/`: `validate.yml` (catalog checks on every PR), `store-watch.yml` (daily store check) and `app-pages.yml` (regenerates `apps/`, `sitemap.xml` and the prerendered catalog on `main` and opens a bot PR).
 
 ## Local Preview
 `assets/apps.json` is loaded with `fetch`, so use a local server. Opening the files directly from disk won't work.
@@ -87,7 +87,7 @@ The template ships `register-website.yml`, a reusable workflow, plus a stub that
 A new app arrives as `coming-soon`. For an app that's already listed, only its identity fields (name, tagline, color, icon, IDs) are refreshed; its status, store links and page copy are never touched.
 
 ### Editing an app by hand
-Edit its entry in `assets/apps.json`, then run `node scripts/validate-apps.mjs` and `node scripts/build-app-pages.mjs`, and commit the regenerated `apps/` pages and `sitemap.xml` with it. If you skip the build, `app-pages.yml` opens a PR with the pages after merge. Fields:
+Edit its entry in `assets/apps.json`, then run `node scripts/validate-apps.mjs` and `node scripts/build-app-pages.mjs`, and commit the regenerated files (`apps/`, `sitemap.xml`, `index.html`, `apps.html`) with it. If you skip the build, `app-pages.yml` opens a PR with the pages after merge. Fields:
 
 ```jsonc
 {

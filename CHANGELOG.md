@@ -5,6 +5,8 @@ All notable changes to this repository will be documented in this file.
 ## 2026-10-06
 
 ### Added
+- The catalog reads without JavaScript. `scripts/build-app-pages.mjs` prerenders the catalog cards, home stats and pipeline counts into `index.html` / `apps.html` with `catalogHtml()` / `statsHtml()` from `assets/script.js`. The browser keeps the static cards while their `data-prerendered` hash matches `apps.json`, so they don't fade in twice, and re-renders them when it doesn't. If `apps.json` fails to load, the static catalog stays instead of an error. `app-pages.yml` commits both pages with the rest.
+- JSON-LD: `Organization` + `WebSite` on the home page, and `MobileApplication` on every app page (store links once released).
 - `robots.txt` and a generated `sitemap.xml`. `scripts/build-app-pages.mjs` writes the sitemap from `apps.json` (app pages and on-site privacy policies), and `app-pages.yml` commits it with the pages. `robots.txt` keeps crawlers off `privacy-policy-template.html`.
 - `rel="canonical"` on the home, catalog and contact pages.
 - `apple-touch-icon.png` (180×180) for iOS home screens.
