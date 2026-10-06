@@ -4,6 +4,15 @@ All notable changes to this repository will be documented in this file.
 
 ## 2026-10-06
 
+### Added
+- Social preview image (`assets/brand/og-image.png`, 1200×630) with `og:image` / `twitter:image` on every page. It's generated from `og-image.html` by `scripts/render-og.mjs`, which reads `apps.json` (#17).
+- App pages for MealCart, Vestia and Tick: a description and features sourced from each app's repo, plus MealCart's problem/solution (#18). Coming-soon pages now title their features "What's coming" and always keep the Notify-me panel.
+- Branded `404.html` with absolute paths, so it works at nested URLs (#19).
+
+### Changed
+- `apps.json` is fetched from an absolute path (`/assets/apps.json`), so pages served at nested URLs, like the 404, still load it.
+- A tagline gets a full stop before an app's description on its page, and incomplete feature grids no longer show a filled empty cell.
+
 ### Fixed
 - `store-watch.yml` opens its PR with the Focal Studio Cross-Repo Bot token instead of `GITHUB_TOKEN`. The org blocks `GITHUB_TOKEN` from creating PRs, which greys out the repo setting, so the watcher could find a release but not report it. Bot PRs also trigger `validate.yml`.
 

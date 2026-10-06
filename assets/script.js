@@ -5,7 +5,8 @@
 (function () {
   'use strict';
 
-  var APPS_URL = 'assets/apps.json';
+  /* Absolute: 404.html is served at arbitrary nested paths */
+  var APPS_URL = '/assets/apps.json';
   var CONTACT_EMAIL = 'focalstudio.apps@gmail.com';
   var REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -61,6 +62,12 @@
   function statusLabel(app) {
     if (app.status === 'in-development' && app.betaUrl) return 'In beta';
     return (STATUS[app.status] || STATUS['coming-soon']).label;
+  }
+
+  /* Taglines are written without a full stop; add one when a description follows */
+  function sentence(text) {
+    var t = String(text || '').trim();
+    return /[.!?…]$/.test(t) ? t : t + '.';
   }
 
   function pill(app) {
@@ -510,7 +517,7 @@
             '<div>' +
               pill(app) +
               '<h1 class="detail-title">' + esc(app.name) + '</h1>' +
-              '<p class="detail-tagline">' + esc(app.tagline) + (app.description ? ' ' + esc(app.description) : '') + '</p>' +
+              '<p class="detail-tagline">' + esc(sentence(app.tagline)) + (app.description ? ' ' + esc(app.description) : '') + '</p>' +
             '</div>' +
           '</div>' +
           (actions ? '<div class="detail-actions">' + actions + '</div>' : '') +
@@ -539,7 +546,7 @@
     }
 
     if (detail.features && detail.features.length) {
-      html += '<section class="detail-section" aria-labelledby="features-h"><h2 id="features-h">Key features</h2><div class="features">' +
+      html += '<section class="detail-section" aria-labelledby="features-h"><h2 id="features-h">' + (released ? 'Key features' : 'What’s coming') + '</h2><div class="features">' +
         detail.features.map(function (f) {
           return '<div class="feature"><span class="feature-icon" aria-hidden="true">' + esc(f.icon) + '</span><strong>' + esc(f.title) + '</strong><span>' + esc(f.text) + '</span></div>';
         }).join('') +
@@ -554,7 +561,7 @@
         '</tbody></table></section>';
     }
 
-    if (!released && !detail.features) {
+    if (!released) {
       var subject = encodeURIComponent('Notify me: ' + app.name);
       html += '<section class="detail-section"><div class="soon-panel reveal">' +
         '<p class="section-label">In the works</p>' +

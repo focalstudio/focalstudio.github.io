@@ -14,12 +14,14 @@ https://focalstudio.github.io.
 - `app.html?app=<slug>`: the page for any app, generated from its `apps.json` entry.
 - `app-wildfocus.html`: redirects to `app.html?app=wildfocus` so old links keep working.
 - `contact.html`: contact links.
+- `404.html`: branded "out of focus" page. GitHub Pages serves it at any unknown URL, so every path in it is absolute (`/assets/...`).
 - `privacy-policy.html`, `privacy-<slug>.html`, `terms.html`: legal pages. These are self-contained and published by each app repo's `publish-privacy.yml`. **Do not restyle or hand-edit them.**
 - `assets/apps.json`: the catalog data.
 - `assets/styles.css`: the design system (tokens at the top).
 - `assets/script.js`: the renderers (orbit, catalog, detail page, stats, beta bar).
 - `assets/app-icons/`: app icons. Square, about 384px.
 - `assets/brand/aperture.svg`: the aperture mark and favicon.
+- `assets/brand/og-image.png`: the 1200×630 social preview every page points `og:image` at. Its source, `og-image.html`, reads `apps.json`. After the catalog changes, regenerate it with `node scripts/render-og.mjs` (needs only Node and Chrome).
 - `scripts/validate-apps.mjs`: checks `apps.json`.
 - `scripts/check-stores.mjs`: the store watcher.
 - `scripts/register-app.mjs`: adds or refreshes one app. The template's `register-website.yml` calls it.
