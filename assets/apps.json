@@ -312,7 +312,7 @@
       "appStoreUrl": null,
       "playStoreUrl": null,
       "betaUrl": null,
-      "privacyUrl": null,
+      "privacyUrl": "privacy-tick.html",
       "releasedAt": null,
       "featured": false,
       "description": "Ultralight numerals, live seconds and a colour wash that follows the time of day, made to sit on your desk.",
