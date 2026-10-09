@@ -2,6 +2,11 @@
 
 All notable changes to this repository will be documented in this file.
 
+## 2026-10-09
+
+### Fixed
+- The WildFocus icon (`assets/app-icons/wildfocus.jpeg`) no longer has black corners inside the rounded card and detail icons. It is now the full-bleed 384 × 384 icon from WildFocus (focalstudio/WildFocus#313), replacing the old 384 × 383 copy of art that had a rounded tile with black corners baked in.
+
 ## 2026-10-06
 
 ### Fixed
