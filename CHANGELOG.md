@@ -2,6 +2,11 @@
 
 All notable changes to this repository will be documented in this file.
 
+## 2026-10-10
+
+### Added
+- Root `CLAUDE.md` pointer; `.claude/CLAUDE.md` now points to `AGENTS.md` (the `.github/copilot-instructions.md` it named doesn't exist).
+
 ## 2026-10-09
 
 ### Fixed
