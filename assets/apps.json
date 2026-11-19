@@ -238,6 +238,7 @@
     },
     {
       "slug": "vestia",
+      "repo": "vestia-portfolio-manager",
       "name": "Vestia",
       "tagline": "Rules-based investing discipline for long-term investors.",
       "status": "coming-soon",

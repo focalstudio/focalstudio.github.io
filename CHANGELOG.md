@@ -2,6 +2,11 @@
 
 All notable changes to this repository will be documented in this file.
 
+## 2026-11-19
+
+### Changed
+- `assets/apps.json`: the vestia entry names its fleet repo (`"repo": "vestia-portfolio-manager"`), so studio's Sync page matches it instead of reporting it missing.
+
 ## 2026-10-10
 
 ### Added
