@@ -2,6 +2,11 @@
 
 All notable changes to this repository will be documented in this file.
 
+## 2026-11-21
+
+### Fixed
+- `privacy-mealcart.html`, `privacy-policy-template.html`: link the aperture favicon and apple-touch-icon, so the tab no longer goes blank on a `/favicon.ico` 404 (part of #35). `terms.html` and `privacy-policy.html` get theirs from WildFocus `docs/` via sync; the template shell is fixed upstream first.
+
 ## 2026-11-19
 
 ### Changed
