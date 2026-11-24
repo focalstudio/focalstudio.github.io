@@ -355,11 +355,10 @@
       "color": "#E8562A",
       "icon": "assets/app-icons/ghostset.png",
       "platforms": [
-        "ios",
-        "android"
+        "ios"
       ],
       "bundleId": "com.focalstudio.ghostset",
-      "androidPackage": "com.focalstudio.ghostset",
+      "androidPackage": null,
       "appStoreUrl": null,
       "playStoreUrl": null,
       "betaUrl": null,
