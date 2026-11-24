@@ -346,6 +346,26 @@
           }
         ]
       }
+    },
+    {
+      "slug": "ghostset",
+      "name": "GhostSet",
+      "tagline": "Your last workout is the one to beat.",
+      "status": "coming-soon",
+      "color": "#E8562A",
+      "icon": "assets/app-icons/ghostset.png",
+      "platforms": [
+        "ios",
+        "android"
+      ],
+      "bundleId": "com.focalstudio.ghostset",
+      "androidPackage": "com.focalstudio.ghostset",
+      "appStoreUrl": null,
+      "playStoreUrl": null,
+      "betaUrl": null,
+      "privacyUrl": null,
+      "releasedAt": null,
+      "featured": false
     }
   ]
 }
